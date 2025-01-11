@@ -6,6 +6,8 @@
     "escapeinside",
     "extendedchars",
     "GDAL",
+    "GeoJson",
+    "GeoTiff",
     "keepspaces",
     "keywordstyle",
     "numbersep",
@@ -18,5 +20,9 @@
     "stringstyle",
     "tabsize",
     "untraversable"
+  ],
+  "cSpell.ignoreWords": [
+    "DCMAKE",
+    "DTSR"
   ]
 }

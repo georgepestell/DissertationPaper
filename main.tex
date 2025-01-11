@@ -146,7 +146,7 @@ Designing an off-road, user-centered routing algorithm to promote on-foot transp
 % TODO: Abstract section
 \section*{Abstract}
 
-This dissetation addresses the challenge of improving accessibility for off-road walking and running by developing a route-planner that extends beyond the limitations of solely on-road/path routing. Drawing on developments from research in areas of robitics and search and rescue, in addition to building upon work done by \textcite{evans2023tsr} at the University of St.\ Andrews, a modular cost-function framework is introduced. This framework allows diverse mapping related data sources to be easily integrated into a mathematical model of terrain features determining the optimal routes selected. Example cost-function presets are evaluated and compared to demonstrate the versitility of this approach for users with different needs and abilities. Finally, a discussion of potetial future projects is given, emphasizing the potential utility of such an application.
+This dissertation addresses the challenge of improving accessibility for off-road walking and running by developing a route-planner that extends beyond the limitations of solely on-road/path routing. Drawing on developments from research in areas of robotics and search and rescue, in addition to building upon work done by \textcite{evans2023tsr} at the University of St.\ Andrews, a modular cost-function framework is introduced. This framework allows diverse mapping related data sources to be easily integrated into a mathematical model of terrain features determining the optimal routes selected. Example cost-function presets are evaluated and compared to demonstrate the versatility of this approach for users with different needs and abilities. Finally, a discussion of potential future projects is given, emphasizing the potential utility of such an application.
 
 \section*{Declaration}
 
@@ -196,14 +196,13 @@ GIS is a category of software which aim to integrate various mapping-related dat
 
 Popular industry tools use databases to represent this map data in tiles, as mapping data converting large areas of the real-world take up a huge amount of data, and chunking enables only necessary parts to be loaded and processed.
 
-Tools such as GDAL enable the use of GIS data without an underlying database, enabling datasets to be created as files with data layers. These  files use specialized GeoTiff and geojson formats (amongst others), storing mapping related metadata that can be used to translate pixel positions to lat/lng positions, as well as other useful information.
+Tools such as GDAL enable the use of GIS data without an underlying database, enabling datasets to be created as files with data layers. These  files use specialized GeoTiff and GeoJson formats (amongst others), storing mapping related metadata that can be used to translate pixel positions to lat/long positions, as well as other useful information.
 
 
 % TODO: search algorithms
 \subsection{Shortest Path Search Algorithms}
 
-The fundamental problem solved by route planners is a shortest path search problem.
-Shortest path search algorithms have a rich history of research and study. Their objective is to find the route with the minimum cost between two given nodes, in a graph where nodes are connected by edges. The two given nodes are often labelled source and target implying directionality of travel. Cost refers to the difficulty of traveling between nodes. Cost is determined by weights, which can be applied to nodes, edges, or other graph features, and are used by a cost function which calculates a cost score for traversing between two nodes. Weights represent some quantifiable metric related to difficulty of travel. A simple example would weigh edges based on their length, and the cost would reflect the distance traveled. Thus, minimizing this finds the shortest path.
+The fundamental problem solved by route planners is a form of shortest-path search problem. Shortest-path search algorithms have a rich history of research and study. Their objective is to find the route with the minimum cost between two given nodes, in a graph where nodes are connected by edges. The two given nodes are often labelled source and target implying directionality of travel. Cost refers to the difficulty of traveling between nodes. Cost is determined by weights, which can be applied to nodes, edges, or other graph features, and are used by a cost function which calculates a cost score for traversing between two nodes. Weights represent some quantifiable metric related to difficulty of travel. A simple example would weigh edges based on their length, and the cost would reflect the distance traveled. Thus, minimizing this finds the shortest path.
 
 \subsubsection{Dijkstra's Algorithm}
 
@@ -213,18 +212,18 @@ To begin, each node's minimum cost is set to infinity, as we have no route to th
 
 The original implementation of Dijkstra's algorithm terminated once all nodes were searched, generating the best route from a source node to all nodes. However, when we mark a node as searched, we are certain to have found the optimal route to it, as it has the minimum current cost of all nodes not already searched. Therefore, all nodes that may possible lead back to that node will have at least an equal cost due to costs being non-negative. Therefore, Dijkstra's algorithm is a best-first search algorithm, and so can be terminated upon finding the target node. This early termination is often referred to as uniform cost search \autocite{felner2011search}.
 
-Whilst Dijkstra's algorithm and uniform cost search are guaranteed to find the optimal route between the source and target node, the original time-complexity for Dijkstra's original algorithm is $\mathcal{O}(\mathbf{N}^2)$, whereas the optimal implementation of uniform cost search has a time-complexity of $\mathcal{O} ((\mathbf{E} + \mathbf{N})\log{\mathbf{N}})$, where $\mathbf{E}$ is the number of edges, and $\mathbf{N}$ is the number of nodes \autocite{felner2011search}.
+Whilst Dijkstra's algorithm and uniform cost search are guaranteed to find the optimal route between the source and target node, the original time-complexity for Dijkstra's original algorithm is $\mathcal{O} (\mathbf{N}^2)$, whereas the optimal implementation of uniform cost search has a time-complexity of $\mathcal{O} ((\mathbf{E} + \mathbf{N})\log{\mathbf{N}})$, where $\mathbf{E}$ is the number of edges, and $\mathbf{N}$ is the number of nodes \autocite{felner2011search}.
 
 % Linking in with the project and why it's useful for a route planner
 \subsubsection{A* Algorithm}
 
-Despite it's successes, Dijkstra's algorithm and uniform cost search only select the next node on the graph to search based on the minimum total cost from the source node. This means that there is no intuition in the algorithm to direct towards the target, and thus routes are found to particular nodes incidentally. This often results in a lot of unnecessary cost calculations for nodes that are not a part of the final route.
+Despite its successes, Dijkstra's algorithm and uniform cost search only select the next node on the graph to search based on the minimum total cost from the source node. This means that there is no intuition in the algorithm to direct towards the target, and thus routes are found to particular nodes incidentally. This often results in a lot of unnecessary cost calculations for nodes that are not a part of the final route.
 
-A* extends Dijkstra's algorithm, giving predictive power to node selection. This is done through heuristics, which inform the algorithm's search order in hopes of finding the best route to the target node earlier. Heuristics are metrics that are relatively cheap to calculate, and aim to predict the remaining cost to the target node. This prediction is added to the minimum cost of the un-searched nodes, meaning nodes are selected to minimize the predicted total route cost.
+A* extends Dijkstra's algorithm, giving predictive power to node selection. This is done through heuristics, which inform the algorithm's search order in hopes of finding the best route to the target node earlier. Heuristics are metrics that are relatively cheap to calculate, and aim to predict the remaining cost to the target node. This prediction is added to the minimum cost of the unsearched nodes, meaning nodes are selected to minimize the predicted total route cost.
 
 With a perfect heuristic, this would be a perfect greedy best-first algorithm, finding the optimal route to the target node first. However, to ensure the best-first search characteristic, and thus ensuring the best route to the target is found, the heuristic merely has to be admissible.
 
-An admissible heuristic is one that never overestimates the true remaining cost to the target. If a heuristic is inadmissable, then is it possible that a worse route will be explored first, as the algorithm overestimated the cost of a shorter path. The admissible heuristics for a particular search problem depends on the exact formulation of the search problem. For example, euclidean distance is admissible for the simple distance edge weighting example.
+An admissible heuristic is one that never overestimates the true remaining cost to the target. If a heuristic is inadmissible, then is it possible that a worse route will be explored first, as the algorithm overestimated the cost of a shorter path. The admissible heuristics that exist for a particular search problem depends on the exact formulation of the search problem. For example, euclidean distance is admissible for the simple distance edge weighting example.
 
 Without a heuristic, the A* algorithm falls back to selecting nodes with the minimum cost, and thus performs the same as Dijkstra's algorithm.
 
@@ -263,10 +262,10 @@ The process of creating Delaunay triangulations aims to take a point set, and cr
 
 \begin{enumerate}[(1)]
   \item vertices in the given edge are on the boundary of the circle, and
-  \item all other vertices are outside of C
+  \item all other vertices are outside C
 \end{enumerate}
 
-Changing the edges connecting vertices to meet this criteria promotes the generation of triangle faces with as close to equilateral triangles as possible, maximizing the minimum angle. This approach minimizes the number of very thin triangles \autocite{preparata2012computational}. This is important for creating useful surface meshes, as very thin faces increases the risk of precision errors  representation.
+Changing the edges connecting vertices to meet these criteria promotes the generation of triangle faces with as close to equilateral triangles as possible, maximizing the minimum angle. This approach minimizes the number of very thin triangles \autocite{preparata2012computational}. This is important for creating useful surface meshes, as very thin faces increases the risk of precision errors  representation.
 
 Creating surface meshes using just triangles is the industry standard for computer graphics and video games, due to the wealth of research into trigonometry giving efficient geometry calculations \autocite{marschner2018graphics}. Triangle-based meshes also are able to represent any surface accurately \autocite{perkins2013fielddstar}.
 
@@ -280,16 +279,16 @@ This project is the first to apply constrained delaunay triangulation for the pu
 % TODO: coordinate systems
 \subsection{Coordinate Systems}
 
-Coordinate systems define how an x,y data point relates to the real world. There are two fundamental types of coordinate systems:
+Coordinate systems define how an $x,y$ data point relates to the real world. There are two fundamental types of coordinate systems:
 
 \begin{itemize}
-  \item Global coordinate systems. Represent the earth as a 3D surface, with points representing the x,y offset from an origin point on the surface of that object.
+  \item Global coordinate systems. Represent the earth as a 3D surface, with points representing the $x,y$ offset from an origin point on the surface of that object.
   \item Projected coordinate systems. Flatten the surface in 3D space to the 2D plane. Used to create maps, or to display the earth on any display. It is impossible to flatten the globe shape of the earth to a 2D plane without causing some distortion in some areas. The most common projection used today is the Web Mercator projection, and is used by Google Maps.
 \end{itemize}
 
 The World Geodetic System (WGS84) global coordinate system specifies latitude/longitude positions, where latitude refers to the relative angle away from the equator (-180 to 180 degree range), and longitude specifies the relative angle from the prime meridian line (-180 to 180 degree range).
 
-The Mercator projection is a projected coordinate system based on a cylindrical map projection. It is the most popular projection used to create and display maps, as it creates a rectangular map preserving navigation angles. However, it's origin at the center results in points further away being increasingly stretched out, making distance calculations increasingly inaccurate.
+The Mercator projection is a projected coordinate system based on a cylindrical map projection. It is the most popular projection used to create and display maps, as it creates a rectangular map preserving navigation angles. However, its origin at the center results in points further away being increasingly stretched out, making distance calculations increasingly inaccurate.
 
 The Universal Transverse Mercator (UTM) projected coordinate system splits the earth's surface into 60 zones, using the center points of each zone as the origin for a mercator projection, minimizing warping of points within that zone. Distances are also normalized so that one x,y point equates to 1 meter, making distance calculations simple and accurate.
 
@@ -305,12 +304,12 @@ The cost function implemented enabled other data sources to be used by the cost 
 
 \begin{itemize}
   \item Edge features. Defined as either traversable, or untraversable. Untraversable edges automatically result in an infinite cost for that edge, unless a traversable feature also applies which overrides untraversable features. This enables interactions such as bridges over water.
-  \item Speed features. Define a customizable speed-factor. When exist, multiply the current cost by some number inversely proportional to the influence the feature has on the walking speed. This was used to model the fact that paths are generally faster to traverse than off-road terrain. The impact of gradient was also modelled using a speed feature.
+  \item Speed features. Define a customizable speed-factor. Where tagged on the mesh, multiply the current cost by some number inversely proportional to the influence the feature has on the walking speed. This was used to model the fact that paths are generally faster to traverse than off-road terrain. The impact of gradient was also modelled using a speed feature.
 \end{itemize}
 
 The benefits to this approach is the modularity enables new features to be created and defined. As features do not affect the underlying mesh, caching is easily implementable, as sections of a mesh are consistent across searches. Additionally, checking for boolean edge features is performant, and allows calculation of cost using speed features to be skipped entirely if untraversable edge feature apply.
 
-However, the drawbacks to this approach exist. First, the cost function itself is limited in it's modelling capacity. For example, many terrain features in the real world interact in complex ways. This approach requires the entirety of that complexity to be written in a single module, as data from other modules cannot transfer data. Additionally, tagging all features onto the mesh in this way can often lead to an inaccurate mesh. For example, paths are often represented as vector lines, and are often small, this implementation tags the whole face as a path if any part of the face contains a path --- without any ability to modify the mesh, the accuracy of features are wholly dependent on having a higher resolution DEM dataset than the resolution of the feature data.
+However, the drawbacks to this approach exist. First, the cost function itself is limited in its modelling capacity. For example, many terrain features in the real world interact in complex ways. This approach requires the entirety of that complexity to be written in a single module, as data from other modules cannot transfer data. Additionally, tagging all features onto the mesh in this way can often lead to an inaccurate mesh. For example, paths are often represented as vector lines, and are often small, this implementation tags the whole face as a path if any part of the face contains a path --- without any ability to modify the mesh, the accuracy of features are wholly dependent on having a higher resolution DEM dataset than the resolution of the feature data.
 
 \subsubsection{Graph Representation}\label{section:context:er:graph}
 
@@ -342,7 +341,7 @@ Several librarys offer delaunay triangulation implementations:
 
   \itemize tin-terrain
 
-  A command line tool written in C++ designed to convert GeoTIFF DEM files into optimised meshes. Open source MIT licensed and available on Github. Offers standard Delaunay Triangulation with no constraints, but has built-in simplification of consistent gradients. Limited documentation.
+  A command line tool written in C++ designed to convert GeoTIFF DEM files into optimized meshes. Open source MIT licensed and available on Github. Offers standard Delaunay Triangulation with no constraints, but has built-in simplification of consistent gradients. Limited documentation.
 
   \itemize Fade (2D and 2.5D)
 
@@ -354,11 +353,11 @@ Several librarys offer delaunay triangulation implementations:
 
 \end{itemize}
 
-Whilst Fade2.5D is the most complete and tailored library for creating surface mesh TINs, the limitation on the number of vertices that can be used with the academic license severely limits the scale of routes that can be generated. As this project is exploratory, this would require a lot of effort to initially go into ensuring the mesh is well-optimised before work on the search algorithm and cost function can be tested. CGAL's license does not come with these restrictions, and additionally offers many pointset and mesh processing tools that may be useful in optimising the router later.
+Whilst Fade2.5D is the most complete and tailored library for creating surface mesh TINs, the limitation on the number of vertices that can be used with the academic license severely limits the scale of routes that can be generated. As this project is exploratory, this would require a lot of effort to initially go into ensuring the mesh is well optimized before work on the search algorithm and cost function can be tested. CGAL's license does not come with these restrictions, and additionally offers many point set and mesh processing tools that may be useful in optimising the router later.
 
 CGAL additionally is well maintained, unlike tin-terrain, which has been archived, and not updated since 2019.
 
-One draw-back to this libray is it's complexity. Due to offering many algorithms with rich configuration options, they require manual adjustment and testing to find the right settings, as they are not specifically tuned for terrain mesh generation. This is also a benefit, as it allows future experimentation with preprocessing to optimise mesh construction.
+One draw-back to this library is it's complexity. Due to offering many algorithms with rich configuration options, they require manual adjustment and testing to find the right settings, as they are not specifically tuned for terrain mesh generation. This is also a benefit, as it allows future experimentation with preprocessing to optimise mesh construction.
 
 \section{Requirements}
 
@@ -368,13 +367,13 @@ The following outlines the requirements specification that was used to generate 
 
 \subsubsection{Modular Routing Algorithm}
 
-The primary artefact this project will create will be a routing algorithm. This will accept a start and end point on the earth's surface, and output a set of points which, when followed from the start point, represent a suggested route over the terrain to the end point.
+The primary artifact this project will create will be a routing algorithm. This will accept a start and end point on the earth's surface, and output a set of points which, when followed from the start point, represent a suggested route over the terrain to the end point.
 
 This route is generated through an algorithm which will construct a representation of the terrain as a search graph, where nodes represent points on the terrain, and edges represent the potentially traversable sections of terrain connecting those nodes. The algorithm then uses a cost function to determine the `goodness' of traversal over edges, finding the optimal set of edges to traverse to reach the end point from the start point.
 
 The exact definition of `goodness' should be defined by the configuration of the cost function, but the base pre-set should define `goodness' as the minimization of overall time of traversal, by considering factors affecting the estimated traversal speed.
 
-This cost function should, at it's most basic, take into consideration the following geometric and topological features of the terrain:
+This cost function should, at its most basic, take into consideration the following geometric and topological features of the terrain:
 
 \begin{itemize}
   \item \textbf{Gradient}. Walking up a steep gradient is much slower and less pleasant than walking on a flat or slightly decline gradient.
@@ -388,7 +387,7 @@ Along with the basic features to be considered above, the cost function should b
 
 \subsubsection{Route Visualization}
 
-For evaluation, and improved user experience, visualizing the output in a way that is easily interpreted is essential. At it's most basic, a line displaying the route should be applied onto a map or recognizable 3D mesh of the terrain. Additional information such as warnings for potentially dangerous sections will improve the transparency of the cost function's decision making, and the algorithm should be able to display where unsafe-to-traverse sections of terrain exist to warn users when following routes.
+For evaluation, and improved user experience, visualizing the output in a way that is easily interpreted is essential. At its most basic, a line displaying the route should be applied onto a map or recognizable 3D mesh of the terrain. Additional information such as warnings for potentially dangerous sections will improve the transparency of the cost function's decision making, and the algorithm should be able to display where unsafe-to-traverse sections of terrain exist to warn users when following routes.
 
 \subsubsection{Additional Cost Function Presets}
 
@@ -407,7 +406,7 @@ A successful implementation should correctly account for configuration options, 
 Additional more complex features should be relatively simple to implement given the modular design of the cost function. These features should model more complex data and relationships.
 
 \begin{itemize}
-  \item \textbf{Current Weather}. The current weather conditions in an area will affect the traversability of areas in different ways depending on factors such as the gradient of the terrain, and it's terrain type.
+  \item \textbf{Current Weather}. The current weather conditions in an area will affect the traversability of areas in different ways depending on factors such as the gradient of the terrain, and its terrain type.
   \item \textbf{Historical Weather}. The recent weather conditions in an area will often influence the traversal of areas, such as rain making areas more boggy and thus harder to traverse.
   \item \textbf{Fear of Heights}. There exist areas of terrain which are flat, but have sharp gradients near-by, which can have a psychological impact on traversal speed.
 \end{itemize}
@@ -447,7 +446,7 @@ This project has raised no ethical concerns. The self-assessment form is include
 
 The search graph is based on a TIN surface mesh constructed from raster DEM data due to the ease in which they can be converted into point-sets. The specific dataset chosen was the COP-30 dataset which has a resolution of roughly 30m, however, the graph construction is designed to be impartial to resolution or particular source.
 
-The decision to construct the graph as a TIN was chosen due to it's ability to accurately and efficiently represent geometric details, and the wealth of research into triangular mesh processing/simplification which are used here to reduce the number of search nodes to improve performance. Additionally, Delaunay triangulation can then be used to create the mesh, which doesn't require any alignment or consistency in the input point-set, enabling simplification to occur on the point-set itself, before triangulation.\ \autoref{section:impl:simplification} includes a comparison in performance between these simplification methods.
+The decision to construct the graph as a TIN was chosen due to its ability to accurately and efficiently represent geometric details, and the wealth of research into triangular mesh processing/simplification which are used here to reduce the number of search nodes to improve performance. Additionally, Delaunay triangulation can then be used to create the mesh, which doesn't require any alignment or consistency in the input point-set, enabling simplification to occur on the point-set itself, before triangulation.\ \autoref{section:impl:simplification} includes a comparison in performance between these simplification methods.
 
 Search nodes are initially created to represent TIN vertices, with two search edges per TIN edge, as edges represent the boundary between two faces, which both could be walked over when following an edge. % TODO: \subsection{section:improvements:search_graph}
 
@@ -458,11 +457,11 @@ A significant limitation arising from the selection of the UTM coordinate system
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=1\textwidth]{assets/meshConstruction_zoomed.png}
-  \caption{Flow graph showing the process required to generate a mesh from DEM data}\label{fig:mesh_construction:dataprocessing}
+  \includegraphics[width=1\textwidth]{assets/meshConstruction-zoomed.png}
+  \caption{Flow graph showing the process required to generate a mesh from DEM data}\label{fig:meshConstruction:dataprocessing}
 \end{figure}
 
-\autoref{fig:mesh_construction:dataprocessing} outlines the pipeline from initial WGS84 DEM dataset to Delaunay Triangulation. The choice to simplify the point-set before triangulation, and again simplify the mesh after simplification was designed to allow for an exploration into performance differences and tweaks to the simplification, which are discussed later (see \autoref{section:impl:simplification}.).
+\autoref{fig:meshConstruction:dataprocessing} outlines the pipeline from initial WGS84 DEM dataset to Delaunay Triangulation. The choice to simplify the point-set before triangulation, and again simplify the mesh after simplification was designed to allow for an exploration into performance differences and tweaks to the simplification, which are discussed later (see \autoref{section:impl:simplification}.).
 
 \subsubsection{Data Feature Representation}
 
@@ -471,7 +470,7 @@ A significant limitation arising from the selection of the UTM coordinate system
 
 Due to the limitations of W. Evans' approach of constructing the search graph solely using topography data, this project developed a novel approach to more accurately represent feature data within the search graph.
 
-Two types of features were identified: area features, and edge features. When traversing over an edge, some features relate more to the surface (i.e. terrain area) being traversed; whereas others relate to the path itself (i.e. edge). For example, terrain type is best categorized as an area feature, as it's volume over the surface is meaningful. Paths, however, are often best represented as edge features, as their width is often is irrelevant to travel on-foot.
+Two types of features were identified: area features, and edge features. When traversing over an edge, some features relate more to the surface (i.e. terrain area) being traversed; whereas others relate to the path itself (i.e. edge). For example, terrain type is best categorized as an area feature, as its volume over the surface is meaningful. Paths, however, are often best represented as edge features, as their width is often is irrelevant to travel on-foot.
 
 The approach to representing these features accurately is similar but requires slightly different setup. Overal, the process aims to apply the geoemtry of both types of features as constraints in the delaunay triangulation.
 
@@ -492,10 +491,10 @@ As mentioned, representing area features requires fetching
 \begin{figure}[!htbp]
   \centering
   \subfloat[CEH Terrain Data]{
-    \includegraphics[width=0.35\textwidth]{assets/benNevis_chunk_terrain.png}
+    \includegraphics[width=0.35\textwidth]{assets/benNevis-chunk-terrain.png}
   }
   \subfloat[Detected Edges of the CEH Terrain Data] {
-    \includegraphics[width=0.35\textwidth]{assets/benNevis_chunk_edges.png}
+    \includegraphics[width=0.35\textwidth]{assets/benNevis-chunk-edges.png}
   }
   \caption{The edges detected from a chunk of terrain-type data warped to UTM.}\label{fig:edges:terrain}
 \end{figure}
@@ -520,7 +519,7 @@ The design of the routing algorithm itself uses uniform cost search, with a cust
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=\textwidth]{assets/costfunction_example1.png}
+  \includegraphics[width=\textwidth]{assets/costfunction-example1.png}
   \caption{Example DAG cost function design. Output models an estimated travel time using three factors influencing travel speed.}\label{fig:cost:example:1}
 \end{figure}
 
@@ -568,7 +567,7 @@ Constructing both the initial topographical TIN and setting up data features req
 \begin{figure}[!htbp]
   \centering
   \includegraphics[width=1\textwidth]{assets/meshConstruction.png}
-  \caption{Final search graph construction process with automatic chunking, api calling, and caching.}\label{fig:mesh_construction:full}
+  \caption{Final search graph construction process with automatic chunking, api calling, and caching.}\label{fig:meshConstruction:full}
 \end{figure}
 
 For extensive searches, the system efficiently handles large volumes of Digital Elevation Model (DEM) and feature data by dividing it into manageable square tiles of a specified size. This method, known as chunking, ensures that data is loaded and processed safely while maintaining consistent partitioning across different uses of the application.
@@ -581,11 +580,11 @@ This approach minimizes redundant data retrieval, accelerates operations, and en
 
 \begin{figure}[!htbp]
   \centering
-  \includegraphics[width=1\textwidth]{assets/meshConstruction_parallel.png}
+  \includegraphics[width=1\textwidth]{assets/meshConstruction-parallel.png}
   \caption{Parallel design of processing DEM chunks into a completed TIN.}
 \end{figure}
 
-After the required chunks are determined, the process of fetching the data from the API and constructing the mesh shown in \autoref{fig:mesh_construction:thread} is designed to be completely independent for each chunk, and only once all chunks are processed are merged together. This enables a pipeline parallelism structure to be designed.
+After the required chunks are determined, the process of fetching the data from the API and constructing the mesh shown in \autoref{fig:meshConstruction:thread} is designed to be completely independent for each chunk, and only once all chunks are processed are merged together. This enables a pipeline parallelism structure to be designed.
 
 \subsubsection{Caching}
 
@@ -652,21 +651,21 @@ Objectively determining the quality of the mesh triangulation is not possible, a
 
 \begin{figure}[!htbp]
   \subfloat[TSR's Solid Mesh] {
-    \includegraphics[width=0.4\textwidth]{assets/benNevis_perspective_solid.png}
+    \includegraphics[width=0.4\textwidth]{assets/benNevis-perspective-solid}.png}
   }
   \subfloat[Google Earth's Topography] {
-    \includegraphics[width=0.4\textwidth]{assets/benNevis_gearth.png}
+    \includegraphics[width=0.4\textwidth]{assets/benNevis-gearth.png}
   }
-  \caption{Visual comparison of meshes of Ben Nevis. The generated mesh from this application on the left, and Google Earth's topology mesh on the right.}\label{fig:mesh:ben_nevis:comparison}
+  \caption{Visual comparison of meshes of Ben Nevis. The generated mesh from this application on the left, and Google Earth's topology mesh on the right.}\label{fig:mesh:benNevis:comparison}
 \end{figure}
 
-We initially evaluate the accuracy of the generated TIN mesh by visually comparing it to Google Earth's topography, as shown in \autoref{fig:mesh:ben_nevis:comparison}. Google Earth's horizontal accuracy (~30m) and height accuracy (~10m), are only marginally higher than the COP-30 DEM used in this project. Therefore, significant differences between the two meshes are likely a result of the mesh simplification process.
+We initially evaluate the accuracy of the generated TIN mesh by visually comparing it to Google Earth's topography, as shown in \autoref{fig:mesh:benNevis:comparison}. Google Earth's horizontal accuracy (~30m) and height accuracy (~10m), are only marginally higher than the COP-30 DEM used in this project. Therefore, significant differences between the two meshes are likely a result of the mesh simplification process.
 
 However, one limitation of this comparison arises from the differing projections used. Google Earth uses the WGS84 projection scheme, not UTM, and so there are some scaling and warping due to this difference. However, general features should still be identifiable.
 
-As seen in \autoref{fig:mesh:ben_nevis:comparison}, the primary topographic features in the Google Earth mesh are all visible in the generated mesh. Nonetheless, improvements could be made in finer details such as sharp angles in mountain ridges, and sudden valleys.
+As seen in \autoref{fig:mesh:benNevis:comparison}, the primary topographic features in the Google Earth mesh are all visible in the generated mesh. Nonetheless, improvements could be made in finer details such as sharp angles in mountain ridges, and sudden valleys.
 
-In addition, the DEM data used fails to accurately model the topography of areas under water, as seen in the bottom left of \autoref{fig:mesh:ben_nevis:comparison}. However, this does not impact the quality of most routes as usually water is completely avoided, or otherwise the water is swam through, at the surface.
+In addition, the DEM data used fails to accurately model the topography of areas under water, as seen in the bottom left of \autoref{fig:mesh:benNevis:comparison}. However, this does not impact the quality of most routes as usually water is completely avoided, or otherwise the water is swam through, at the surface.
 
 \subsubsection{Edge Detection}
 
@@ -674,16 +673,16 @@ In addition, the DEM data used fails to accurately model the topography of areas
   \centering
   \subfloat{
     \centering
-    \includegraphics[width=0.8\textwidth]{assets/benNevis.png}\label{fig:mesh:ben_nevis:solid}
+    \includegraphics[width=0.8\textwidth]{assets/benNevis.png}\label{fig:mesh:benNevis:solid}
   }\\
   \subfloat{
     \centering
-    \includegraphics[width=0.8\textwidth]{assets/benNevis_wire.png}\label{fig:mesh:ben_nevis:wireframe}
+    \includegraphics[width=0.8\textwidth]{assets/benNevis_wire.png}\label{fig:mesh:benNevis:wireframe}
   }
-  \caption{Final model of Ben Nevis, with path, water-feature, and terrain-type contours applied. A solid and wireframe render are shown, in both top-down orthographic, and side-on perspective views. Demonstrating a recognizable, but noisy and non-perfectly optimized mesh.}\label{fig:mesh:ben_nevis}
+  \caption{Final model of Ben Nevis, with path, water-feature, and terrain-type contours applied. A solid and wireframe render are shown, in both top-down orthographic, and side-on perspective views. Demonstrating a recognizable, but noisy and non-perfectly optimized mesh.}\label{fig:mesh:benNevis}
 \end{figure}
 
-\autoref{fig:edges:terrain} and \autoref{fig:mesh:ben_nevis} demonstrate a drawback to the edge-detection implementation. For each chunk, a different image is used which is warped before fetching the contours. This means that the images have areas of NO\_DATA values, and the border between NO\_DATA and any value is detected as an edge. An alternative approach could be to run the edge-detection before warping, and using a vector warping on the resulting edges. It would be easier here to prevent edges on the border of images being included as contours in the final mesh.
+\autoref{fig:edges:terrain} and \autoref{fig:mesh:benNevis} demonstrate a drawback to the edge-detection implementation. For each chunk, a different image is used which is warped before fetching the contours. This means that the images have areas of NO\_DATA values, and the border between NO\_DATA and any value is detected as an edge. An alternative approach could be to run the edge-detection before warping, and using a vector warping on the resulting edges. It would be easier here to prevent edges on the border of images being included as contours in the final mesh.
 
 \subsection{Generated Routes}
 
@@ -745,14 +744,20 @@ One solution to this problem may be to cache values when a method is called firs
 
 \subsection{Iterative Cost Function}
 
-Due to new stack frames being generated at each function call, the current recursive design of the cost function limits it's maximum size and complexity, as each dependency runs whilst the parents function is still in scope, thus using memory. Performance in all aspects could be improved through the conversion of this recursive design to an iterative approach.
+Due to new stack frames being generated at each function call, the current recursive design of the cost function limits its maximum size and complexity, as each dependency runs whilst the parents function is still in scope, thus using memory. Performance in all aspects could be improved through the conversion of this recursive design to an iterative approach.
 
-This may involve using the FeatureManager to handle all calculate requests. Instead of features directly calling calculate to their dependencies and casting these results, the feature manager could maintain a list of the dependencies, and iteratively follow the DAG, not calling calculate until a leaf-node is found (one with no dependencies). The leaf nodes could then be calculated and their values passed as input when calling calculate on it's dependent.
+This may involve using the FeatureManager to handle all calculate requests. Instead of features directly calling calculate to their dependencies and casting these results, the feature manager could maintain a list of the dependencies, and iteratively follow the DAG, not calling calculate until a leaf-node is found (one with no dependencies). The leaf nodes could then be calculated and their values passed as input when calling calculate on its dependent.
 
 However, challenges arise in maintaining the ability for features to output any type, as the feature manager would have to be able to handle the arbitrary output type, and input it into features.
 
 % TODO: Conclusion
 \section{Conclusion}
+
+To conclude, the success of this project hinges on its developments into the understanding of the possibilities and barriers to the creation of generalized off-road route planning. The resulting application has a broad capacity to model both mathematical concepts, and physical/psychological research into the impact certain terrain features such as terrain-type, gradient, and fear has on route preference. The potential for further developments and research present a promising opportunity to improve accessibility to walking and running as a form of transportation.
+
+Whilst this project does overall add to the understanding of these topics, the end result is by no means a final product - being limited in both its accuracy, and performance. A large amount of future research would be required to create a product that could be useful near the scale of traditional route planners.
+
+This project could benefit immensely from a higher resolution DEM dataset, along with a comprehensive look into methods and configurations for optimization of the underlying mesh, and constraints, to both improve performance and accuracy.
 
 \pagebreak
 
@@ -833,7 +838,7 @@ However, challenges arise in maintaining the ability for features to output any 
   \pagebreak
   \section{User Manual}
 
-  For the cli applicaiton, refer to the user manual below:
+  For the cli application, refer to the user manual below:
 
   \begin{lstlisting}[]
   Usage: 
