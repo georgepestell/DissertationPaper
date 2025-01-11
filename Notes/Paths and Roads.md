@@ -1,0 +1,3 @@
+Paths, tracks, and roads remain an essential resource for on-foot travel in potentially hazardous areas. For example, densly populated forests are often unfeasible for traversal, except for where paths have been created through them. Satelite terrain data is limited in it's ability to see through tree canopies and other structures blocking aerial views. Therefore, alternative data sources have to be integrated to fetch paths.
+
+The Overpass API run by OpenStreetMaps offers extremely information rich relational mapping data. As discussed, this dataset has been croud-sourced, but through testing I have found very little to no difference in the roads and paths offered when compared to Google Maps.

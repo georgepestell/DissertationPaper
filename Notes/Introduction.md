@@ -1,0 +1,6 @@
+On-foot navigation and route planning over complex terrains is a difficult problem, requiring specialist knowledge and experience of an area to successfully plan safe and efficient routes. The static environment, climate and weather patterns interact in complex ways, and scientific research on the impacts of these elements on walking ability and speed is limited. Little efforts in computer science have been made to create tools automating these processes using the vast amounts of data from satelites and orgaisations, with the main advances in traversal of real-world terrains limited to the world of robotics.
+
+When traversing rural environments, safety must be a priority when planning walking routes. 
+
+
+of static environmental features, dynamic climate and weather features, and the complex interactions many of these factors have as they interact with eachother. It is a problem with which computational solutions are severely lacking, and with research taking a back seat in the face of the recent advances in robotic terrain traversal.
