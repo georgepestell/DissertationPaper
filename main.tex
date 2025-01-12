@@ -455,12 +455,11 @@ This project has raised no ethical concerns. The self-assessment form is include
 
 The search graph is based on a TIN surface mesh constructed from raster DEM data due to the ease in which they can be converted into point-sets. The specific dataset chosen was the COP-30 dataset which has a resolution of roughly 30m, however, the graph construction is designed to be impartial to resolution or particular source.
 
-The decision to construct the graph as a TIN was chosen due to its ability to accurately and efficiently represent geometric details, and the wealth of research into triangular mesh processing/simplification which are used here to reduce the number of search nodes to improve performance. Additionally, Delaunay triangulation can then be used to create the mesh, which doesn't require any alignment or consistency in the input point-set, enabling simplification to occur on the point-set itself, before triangulation.\ \autoref{section:impl:simplification} includes a comparison in performance between these simplification methods.
+The decision to construct the graph as a TIN was chosen due to its ability to accurately and efficiently represent geometric details, and the wealth of research into triangular mesh processing/simplification which are used here to reduce the number of search nodes to improve performance. Additionally, Delaunay triangulation can then be used to create the mesh, which doesn't require any alignment or consistency in the input point-set, enabling simplification to occur on the point-set itself, before triangulation (see. \autoref{section:impl:meshProcessing}).
 
-Search nodes are initially created to represent TIN vertices, with two search edges per TIN edge, as edges represent the boundary between two faces, which both could be walked over when following an edge. % TODO: \subsection{section:improvements:search_graph}
+Search nodes are initially created to represent TIN vertices, with two search edges per TIN edge, as edges represent the boundary between two faces, which both could be walked over when following an edge.
 
-The UTM coordinate scheme was chosen for the surface mesh. Global coordinate schemes are the only coordinate schemes avoiding the inherent projection distortion, but suffer from % TODO: 
-when creating meshes. UTM has a very low amount of distortion, and distances are equivalent to meters, automatically resolving issues with other projected coordinate schemes requiring translation and accounting for the curvature of the earth's surface.
+The UTM coordinate scheme was chosen for the surface mesh. Global coordinate schemes are the only coordinate schemes avoiding the inherent projection distortion, but suffer from floating-point precision errors when creating meshes. UTM has a very low amount of distortion, and distances are equivalent to meters, automatically resolving issues with other projected coordinate schemes requiring translation and accounting for the curvature of the earth's surface.
 
 A significant limitation arising from the selection of the UTM coordinate system is this project can only route between points in the UK --- specifically UTM zone 30. With additional work, other zones may be supported, but issues arise when warping data converting multiple zones. However, many of feature datasets chosen only give data for the UK.\@ Solving this issue is possible with additional work (see \autoref{section:improvements:zones}). This work is beyond the scope of this project, as it is still possible to demonstrate the full routing ability of this project using U.K. example routes.
 
@@ -470,7 +469,7 @@ A significant limitation arising from the selection of the UTM coordinate system
   \caption{Flow graph showing the process required to generate a mesh from DEM data}\label{fig:meshConstruction:dataprocessing}
 \end{figure}
 
-\autoref{fig:meshConstruction:dataprocessing} outlines the pipeline from initial WGS84 DEM dataset to Delaunay Triangulation. The choice to simplify the point-set before triangulation, and again simplify the mesh after simplification was designed to allow for an exploration into performance differences and tweaks to the simplification, which are discussed later (see \autoref{section:impl:simplification}.).
+\autoref{fig:meshConstruction:dataprocessing} outlines the pipeline from initial WGS84 DEM dataset to Delaunay Triangulation. The choice to simplify the point-set before triangulation, and again simplify the mesh after simplification was designed to allow for an exploration into performance differences and tweaks to the simplification, which are discussed later (see \autoref{section:impl:meshProcessing}.).
 
 \subsection{Data Feature Representation}\label{section:design:mesh:dataFeatures}
 
@@ -643,7 +642,7 @@ CGAL was used for converting the DEMs to TINs. CGAL offers constrained Delaunay 
 
 This 2D Delaunay triangulation projected onto 3D is less complex than using a 3D Delaunay triangulation, which constructs tetrahedra. \textcite{perkins2013fielddstar} found that routing over tetrahedra is also less performant. In addition, the DEM data used is 2.5D, and so little benefit would be gained from a 3D triangulation.
 
-\subsection{Mesh Processing}
+\subsection{Mesh Processing}\label{section:impl:meshProcessing}
 
 The initial implementation triangulated the raw DEM data with no pre-processing to remove the number of points. Performance quickly became an issue for reasonably small search distances, due to the fact that 30m resolution DEM data includes 2916 points per square mile.
 
@@ -862,6 +861,9 @@ The current implementation allows relevant data features to specify the level of
 The current implementation fails to properly represent streams. The WaterFeature data from openstreemaps gives the geometry of most water features. However, very thin and sometimes large water features (such as streams) can be represented as vectr lines with no geometry. This means the face-tagging approach used for water features does not accurately represent these water features.
 
 A potential solution would be to seek alternative datasets specifically designed to represent water geometry. Alternatively, it may be possible to pre-process these water features, and thicken their line width. By enforcing a minimum line-size, we can ensure faces are created and tagged. However, this approach does not perfectly model the real-world, and so further options may be optimal.
+
+% TODO: Removing UTM zone restrictions
+\subsection{Removing UTM Zone Restrictions}\label{section:improvements:zones}
 
 \section{Conclusion}
 
