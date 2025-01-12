@@ -6,7 +6,7 @@
 %% font of the document is to be sans serif.
 \usepackage{fontspec}
 \setmainfont{Atkinson Hyperlegible}
-\setmonofont[Scale=0.9]{JetBrainsMono Nerd Font}
+\setmonofont[Scale=0.85]{JetBrainsMono Nerd Font}
 
 \usepackage{titling}
 \usepackage{amsmath}
@@ -14,7 +14,7 @@
 \usepackage{algpseudocode}
 \usepackage{graphicx}
 \usepackage{subcaption}
-\usepackage{subfloat}
+\usepackage[countmax]{subfloat}
 \usepackage{float}
 \usepackage{xcolor}
 \usepackage[framemethod=tikz]{mdframed}
@@ -24,8 +24,10 @@
 
 \usepackage{moreverb}
 
+\sloppy
+
 %TC:ignore
-\immediate\write18{echo -n $(texcount -merge -total -sum -inc -brief \jobname.tex) > count.tex}
+\immediate\write18{echo -n $(texcount -total -sum -brief \jobname.tex) > count.tex}
 %TC:endignore
 
 \definecolor{commentsColor}{rgb}{0.497495, 0.497587, 0.497464}
@@ -73,7 +75,7 @@
 \usepackage[shortlabels]{enumitem}
 
 \usepackage[section, numbib, nottoc]{tocbibind}
-\usepackage[natbib, style=ieee]{biblatex}
+\usepackage[natbib, style=ieee, url=true, doi=true]{biblatex}
 \usepackage[title, titletoc]{appendix}
 \usepackage{tocloft}
 
@@ -229,7 +231,7 @@ Without a heuristic, the A* algorithm falls back to selecting nodes with the min
 
 For a terrain sensitive routing algorithm, it may be possible to construct an admissible heuristic, however the task is complex due to the many factors that may influence off-road traversal cost.
 
-\subsection{Graph Representations}
+\subsection{Search Graph Representations}
 
 To apply a shortest-path search algorithm to a route planner, the real-world environment must be represented by a graph structure. Existing route planners using pre-defined roads and paths construct search graphs using junctions connecting roads/paths, and dead-ends as graph nodes, with the sections of road/path connecting those nodes as edges. These are weighted by the segment distance and road speed, with modern advances include traffic conditions, and fuel efficiency into the edge weights.
 
@@ -256,7 +258,7 @@ Large-scale terrain meshes of the earth's surface are often constructed using ra
 
 The most common DEM format is raster data, providing a grid of elevation points created from the raw scanning data. Contour lines offer a vector representation which are more compact, but are less widely available, and require more processing to create surface meshes as the contours must be converted to points before beginning the mesh generation.
 
-\subsection{Delaunay Triangulations}
+\subsection{Delaunay Triangulations}\label{section:cs:dt}
 
 The process of creating Delaunay triangulations aims to take a point set, and create a surface mesh where each vertex (point) is connected by edges and faces to other vertices \autocite{preparata2012computational}. For each edge, a circle could be drawn maintaining these two properties:
 
@@ -292,7 +294,7 @@ The Mercator projection is a projected coordinate system based on a cylindrical 
 
 The Universal Transverse Mercator (UTM) projected coordinate system splits the earth's surface into 60 zones, using the center points of each zone as the origin for a mercator projection, minimizing warping of points within that zone. Distances are also normalized so that one x,y point equates to 1 meter, making distance calculations simple and accurate.
 
-According to \textcite{cgal:eb-24b}, constructing surface meshes of the earth's surface is best done with projected coordinate systems % TODO: Why?
+According to \textcite{cgal:eb-24b}, constructing surface meshes of the Earth's surface is more effective when using projected coordinate systems. Global coordinate systems, typically expressed in degrees (spanning -180° to 180° longitude and -90° to 90° latitude), require high-precision decimal representation to maintain accuracy. In contrast, UTM coordinates use linear units (meters) relative to a specific point, allowing for simpler and more precise representation with lower-precision data values. Additionally, surface mesh construction often assumes a flat plane, whereas global coordinate systems inherently describe angles on a curved sphere.
 
 \subsection{Existing Research}
 
@@ -321,17 +323,11 @@ Evans' results found that the routing time and mesh generation scaled linearly p
 
 
 % TODO: research into factors impacting off-road walking
-\subsection{Factors Impacting Off-Road Walking}
+\subsubsection{Factors Impacting Off-Road Walking}
 
 Most of the research into quantifying factors influencing travel time is limited to single factorial studies in non real-world environments. This poses a challenge as quantification of feature influence is required to construct a cost value to be optimized in an algorithm.
 
-% TODO: research into gradient impact on walk-speed
-\subsubsection{Gradient}
-
-% TODO: research into terrain type impact on walk-speed
-\subsubsection{Terrain Type}
-
-\subsection{Existing Tools}
+\subsection{Existing Tools and Data Sources}
 
 \subsubsection{Delaunay Triangulation}
 
@@ -339,17 +335,17 @@ Several librarys offer delaunay triangulation implementations:
 
 \begin{itemize}
 
-  \itemize tin-terrain
+  \item tin-terrain
 
-  A command line tool written in C++ designed to convert GeoTIFF DEM files into optimized meshes. Open source MIT licensed and available on Github. Offers standard Delaunay Triangulation with no constraints, but has built-in simplification of consistent gradients. Limited documentation.
+        A command line tool written in C++ designed to convert GeoTIFF DEM files into optimized meshes. Open source MIT licensed and available on Github. Offers standard Delaunay Triangulation with no constraints, but has built-in simplification of consistent gradients. Limited documentation.
 
-  \itemize Fade (2D and 2.5D)
+  \item Fade (2D and 2.5D)
 
-  A C++ library specifically designed to integrate Delaunay Trainagulation of DEM data. Offers a flexible class output structure. Restrictive academic license, with a maximum number of components at any one time imposed. Offers simplification and processing algorithms specifically designed for terrain meshes. Has comprehensive documentation.
+        A C++ library specifically designed to integrate Delaunay Trainagulation of DEM data. Offers a flexible class output structure. Restrictive academic license, with a maximum number of components at any one time imposed. Offers simplification and processing algorithms specifically designed for terrain meshes. Has comprehensive documentation.
 
-  \itemize CGAL
+  \item CGAL
 
-  A C++ library suite offering computational geometry algorithms. Has an open source license, and is well documented. Offers standard and constrained Delaunay triangulation, as well as a large amount of mesh processing tools.
+        A C++ library suite offering computational geometry algorithms. Has an open source license, and is well documented. Offers standard and constrained Delaunay triangulation, as well as a large amount of mesh processing tools.
 
 \end{itemize}
 
@@ -358,6 +354,19 @@ Whilst Fade2.5D is the most complete and tailored library for creating surface m
 CGAL additionally is well maintained, unlike tin-terrain, which has been archived, and not updated since 2019.
 
 One draw-back to this library is it's complexity. Due to offering many algorithms with rich configuration options, they require manual adjustment and testing to find the right settings, as they are not specifically tuned for terrain mesh generation. This is also a benefit, as it allows future experimentation with preprocessing to optimise mesh construction.
+
+\subsection{DEM Data}
+
+\subsection{Terrain Type Data}
+
+\subsubsection{Water Data}
+
+Whether water exists in a particular region of the terrain is a special form of terrain type, which has a special impact on
+
+\subsection{Path Data}
+
+
+\subsection{Street Lighting}
 
 \section{Requirements}
 
@@ -389,7 +398,7 @@ Along with the basic features to be considered above, the cost function should b
 
 For evaluation, and improved user experience, visualizing the output in a way that is easily interpreted is essential. At its most basic, a line displaying the route should be applied onto a map or recognizable 3D mesh of the terrain. Additional information such as warnings for potentially dangerous sections will improve the transparency of the cost function's decision making, and the algorithm should be able to display where unsafe-to-traverse sections of terrain exist to warn users when following routes.
 
-\subsubsection{Additional Cost Function Presets}
+\subsubsection{Multiple Cost Function Presets}
 
 To demonstrate the capacity for the ranking algorithm to cater to different abilities and preferences, additional cost function configurations should be created, to allow comparison and evaluation of the modular framework and presets themselves.
 
@@ -401,7 +410,7 @@ With the created pre-sets, a critical evaluation of the output will allow the su
 
 A successful implementation should correctly account for configuration options, and differences and similarities between presets should be justifiable.
 
-\subsection{Additional Cost Function Features}
+\subsubsection{Additional Cost Function Features}
 
 Additional more complex features should be relatively simple to implement given the modular design of the cost function. These features should model more complex data and relationships.
 
@@ -463,10 +472,7 @@ A significant limitation arising from the selection of the UTM coordinate system
 
 \autoref{fig:meshConstruction:dataprocessing} outlines the pipeline from initial WGS84 DEM dataset to Delaunay Triangulation. The choice to simplify the point-set before triangulation, and again simplify the mesh after simplification was designed to allow for an exploration into performance differences and tweaks to the simplification, which are discussed later (see \autoref{section:impl:simplification}.).
 
-\subsubsection{Data Feature Representation}
-
-% % TODO: MOVE TO WHEN FEATURE CONTOURS ARE DISCUSSED
-% After considering the potential features that may be useful in routing decisions, only the height of elevation was considered important. Whilst the x,y positions of features such as fences, buildings, and water are important, their height is not important. This means that the construction of the topography of the mesh is solely dependent on the DEM elevation data. The potential for future research into potential uses for enabling features to change z-coordinates of mesh points is discussed in \autoref{section:improvements:heightdata}.
+\subsection{Data Feature Representation}\label{section:design:mesh:dataFeatures}
 
 Due to the limitations of W. Evans' approach of constructing the search graph solely using topography data, this project developed a novel approach to more accurately represent feature data within the search graph.
 
@@ -482,11 +488,11 @@ This method works well for most features, as mapping data usually impact the who
 
 \subsubsection{Vector Features}
 
-As mentioned, representing area and edge features requires fetching edges and contours of data.
+%TODO: As mentioned, representing area and edge features requires fetching edges and contours of data.
 
 \subsubsection{Raster Features}
 
-As mentioned, representing area features requires fetching
+%TODO: As mentioned, representing area features requires fetching
 
 \begin{figure}[!htbp]
   \centering
@@ -502,13 +508,9 @@ As mentioned, representing area features requires fetching
 % TODO: Context survey computer vision
 Computer vision enables vector edges to be detected and extracted from raster data, which can then be converted into a set of constraints that can be applied onto the mesh.
 
-Applying data edges as constraints is sufficient to accurately represent feature locations.\ \autoref{fig:data:terrain} shows the detected contours overlaid onto the original terrain type data. Every region defined by the contours have a uniform terrain type. Constraints ensure that edges fully cover each data border, and so every triangle will fall within, and not overlap any, terrain section --- getting the pixel value for any point in these triangles will therefore give the correct terrain type.
+Applying data edges as constraints is sufficient to accurately represent feature locations.\ \autoref{fig:edges:terrain} shows the detected contours along with the original terrain type data. Every region defined by the contours have a uniform terrain type. Constraints ensure that edges fully cover each data border, and so every triangle will fall within, and not overlap any, terrain section --- getting the pixel value for any point in these triangles will therefore give the correct terrain type.
 
 Using constraints to define data borders enables a high accuracy dataset to be represented even on a low DEM resolution mesh.
-
-\subsubsection{Edge Features}
-
-As discussed in \autoref{section:context:er:graph}, constructing the search graph solely based on geometry fails to accurately represent topological features with a higher resolution than the underlying DEM data. For simplified meshes, this issue is amplified as a highly-simplified mesh will have even fewer resolution for feature data.
 
 \subsection{Routing Algorithm}
 
@@ -532,27 +534,51 @@ A primary contribution this project has made is with the design of the cost func
 
 \subsubsection{Features}
 
-Features are designed to be able to represent any data or mathematical concept. Each feature follows the same three step setup process.
-
 \begin{figure}[!htbp]
   \includegraphics[width=0.5\textwidth]{assets/feature.png}
   \centering
   \caption{Feature class UMl design.}\label{fig:feature}
 \end{figure}
 
-First, a feature instance is created using the constructor. This default constructor can be overridden to enable additional configuration options to be set. Next, the function is initialized --- this is designed to enable features to fetch data from APIs if require, and modify the search graph as required. Finally, tagging enables features to setup data structures with the final search mesh.
+Features are designed to be able to represent any data or mathematical concept. Some features are categorical, numeric, or informational. Therefore, features have been designed to be able to output any data type. \autoref{fig:feature} shows the design of a basic feature. Features are designed to use other feature's output as input, and so the output types must match expected dependency types. In addition, the final cost output feature must output a number value representing the cost. This allows complex data relationships to be modelled in a modular way, which makes re-using components in different configurations easier as the data can be outputted in it's original type, with different interpretor features used to model different factors related to that data.
 
-Feature are designed to be able to override the default constructor. The default just sets the feature ID.\@ Here, other configuration options can be set with new parameters, as the function template for the \texttt{initialize} and \texttt{tag} functions should not be altered to enable these functions to be called automatically upon setup.
+\subsubsection{Features Setup}
 
-As shown in \autoref{fig:feature}, the initialize and tag methods are abstract, meaning each feature must define their own methods following this template. This allows features to implement empty methods if no configuration is required, such as a purely mathematical feature such as the gradient or distance features, or call APIs and cache results such as with the \texttt{PathFeature}, \texttt{WaterFeature}, and \texttt{CEHTerrainFeature}.
+\begin{figure}[!htbp]
+  \centering
+  \subfloat[Initialization] {
+    \includegraphics[width=0.5\textwidth]{assets/FeatureSetup-Initialize.png}
+  }
+  \subfloat[Tagging] {
+    \includegraphics[width=0.5\textwidth]{assets/FeatureSetup-Tag.png}
+  }
+  \caption{Initialization and tagging phases of feature setup. Showing how features interact with, and modify the TIN search mesh.}
+  \label{fig:design:features:setup}
+\end{figure}
 
-The calculation logic must also be defined by each feature. Features are designed to be able to output any type of information, as some data types are categorical, some quantifiable, etc. When using dependencies, the dependent will call the dependency function's calculate function, and this output type must match the expected type. The final output feature must be a number representing the non-negative cost.
+Each feature follows the same three step setup process: configuration allowing users to define option values; initialization of the feature, which may modify the search graph as described in \autoref{section:design:mesh:dataFeatures}; and finally tagging.
 
-\subsubsection{Data Features}
+
+Features by default set in the first stage just a unique identifier, which is used to check for dependecy cycles in the cost function. Features may add configuration options to this construction. This allows user-preferences to be defined, benefiting the accessibility of the final product such as the degree to which paths are preferred over off-road terrain. These configuration options also enable data simplification and processing options to be modified, making it easier to test different processing options in testing.
+
+
+The initialization and tagging stages of the setup process are outlined in \autoref{fig:design:features:setup}. The initialization stage is designed to allow for features to prepare data if required, and add contours to the TIN. The tagging stage is designed to enable caching of data results to improve performance during cost-calculations. For example, it is more performant to open a dataset once and tag each face with the terrain type, than to open and close the file each time a cost is evaluated. However, tagging would be invalidated if the TIN is modified, hence why tagging must be done separately to initialization, so that all features can add contours to the TIN before tagging takes place.
+
+
+% TODO: MOVE TO IMPL.
+% As shown in \autoref{fig:feature}, the initialize and tag methods are abstract, meaning each feature must define their own methods following this template. This allows features to implement empty methods if no configuration is required, such as a purely mathematical feature such as the gradient or distance features, or call APIs and cache results such as with the \texttt{PathFeature}, \texttt{WaterFeature}, and \texttt{CEHTerrainFeature}.
+
+\subsubsection{Data vs Logic Features}
 
 Whilst all feature types are treated the same, it is useful to distinguish data features, with logic features. Logic features take input, apply some logic, and output the value. Data features use datasets to give information about some feature of the terrain.
 
 Every data feature will require a very similar design to their initialization and tagging setup functions.
+
+For initialization, the example data features, and likely most data features, will fetch the required area of data for the given search area. Then, if required, contours will be extracted from that data feature and applied onto the mesh. Additionally, any caching of information that is not related to components of the mesh itself can be stored in initialization, as other features may manipulate the mesh further. Tagging enables mesh-specific data to be related in feature attributes.
+
+Logic features on the other hand likely require little initialization or tagging. Examples such as gradient and distance are best calculated during routing, as the gradient and distance for a search edge is likely only useful for when that edge itself is having it's cost calculated. This reduces overal computation when uniform cost search skips nodes once the target node is found.
+
+However, these distinctions are conceptual only, and features are welcome to put any logic in any of the three core setup and calculation logic, as long as the TIN is only manipulated in the initialization stage.
 
 \subsection{Graph Traversal}
 
@@ -582,9 +608,10 @@ This approach minimizes redundant data retrieval, accelerates operations, and en
   \centering
   \includegraphics[width=1\textwidth]{assets/meshConstruction-parallel.png}
   \caption{Parallel design of processing DEM chunks into a completed TIN.}
+  \label{fig:meshConstruction:thread}
 \end{figure}
 
-After the required chunks are determined, the process of fetching the data from the API and constructing the mesh shown in \autoref{fig:meshConstruction:thread} is designed to be completely independent for each chunk, and only once all chunks are processed are merged together. This enables a pipeline parallelism structure to be designed.
+After the required chunks are determined, the process of fetching the data from the API and constructing the mesh shown in \autoref{fig:meshConstruction:full} is designed to be completely independent for each chunk, and only once all chunks are processed are merged together. This enables a pipeline parallelism structure to be designed as shown in \autoref{fig:meshConstruction:thread}.
 
 \subsubsection{Caching}
 
@@ -594,19 +621,47 @@ Caching data is used to dramatically reduce the API calls and processing require
 % TODO: Implementation section
 \section{Implementation}
 
-An important note for this section: some UML diagrams display pointers with asterisks (e.g.\ \texttt{Feature *}). Please note that unless otherwise stated, these are all referring to smart pointers in their implementation, as manual malloc/free pointer creation requires manual memory management. Smart pointers are favoured to automatically free out-of-scope variables, preventing memory leaks.
+This section discusses some of the specific challenges encountered, and the solutions developed during the implementation of the design of this route planner.
+
+An important note: UML diagrams are used to represent C++ classes. Pointers are shown with asterisks (e.g.\ \texttt{Feature *}). Where used, and unless otherwise specified, these refer to smart pointers. Smart pointers give far better memory safety, as objects are automatically freed from memory when out-of-scope, preventing the need to rememeber to manually free objects which easily leads to memory leaks if ommitted.
 
 % TODO: mesh derivation (CGAL), features (inheritance and overriding functions, dependencies local to features, OpenCV computer vision), data files (warping, GDAL), API (libcurl), optimization (multi-threading/oneTBB), caching (database vs local files), visualization (KML)
 
 % TODO: mesh derivation, 
 
+\subsection{Output Visualization}
+
+The route planner generates KML files as output for use with Google Earth. A path is drawn between the source point and end point, following the recommended route given by the router. Colours are applied from green to red representing the gradient difficulty.
+
+Where applicable, warnings are displayed telling users of potential hazards in the surrounding area, giving a brief description and estimated location. This gives insights into the reasons routes were chosen over others, and increases the safety, as users are aware of specific features to avoid. To improve readability, only warnings for areas close to the generated route are displayed, which are likely the only warnings relevant when following the route.
+
 \subsection{Mesh Derivation}
 
 CGAL was used for converting the DEMs to TINs. CGAL offers constrained Delaunay trinagulation, which is an essential design feature of the mesh. In addition, to enable initial experimentation with mesh optimisation, CGAL does not impose a limit to the number of components in the mesh like the Fade library.
 
-CGAL's constrained Delaunay triangulation is done automatically by the \texttt{Constrained_\allowbreak{}Delauany_\allowbreak{}Triangulation_2} class. CGAL enables 2.5D triangulation through this class, with the addition of the \texttt{Projection_\allowbreak{}Traits_\allowbreak{}_xy_3}. This triangulates points on the $xy$ plane, and then applies the $z$ position onto those points.
+% CGAL's constrained Delaunay triangulation is done automatically by the \texttt{Constrained\_\allowbreak Delauany\_\allowbreak Triangulation\_2} class. CGAL enables 2.5D triangulation through this class, with the addition of the \texttt{Projection\_\allowbreak Traits\_\allowbreak \_xy\_3}. This triangulates points on the $xy$ plane, and then applies the $z$ position onto those points.
 
 This 2D Delaunay triangulation projected onto 3D is less complex than using a 3D Delaunay triangulation, which constructs tetrahedra. \textcite{perkins2013fielddstar} found that routing over tetrahedra is also less performant. In addition, the DEM data used is 2.5D, and so little benefit would be gained from a 3D triangulation.
+
+\subsection{Mesh Processing}
+
+The initial implementation triangulated the raw DEM data with no pre-processing to remove the number of points. Performance quickly became an issue for reasonably small search distances, due to the fact that 30m resolution DEM data includes 2916 points per square mile.
+
+Two forms of simplification were implemented: pre-processing the DEM point set, and processing the constructed mesh itself. Both use CGAL's tools for this process. Both processing steps must be done before features are intialized, as they are likely to impact the accuracy of contours added. This two step processing enabled experimentation of different approaches, as research on CGALs implementations has not been conducted. Further experimentation would benefit the accuracy of the resulting mesh, as some finer details are affected by the processing implemented.
+
+\subsubsection{Point Set Pre-Processing}
+
+To simplify the point set, the \texttt{hierarchy\_simplify\_point\_set} function is used - allowing the setting of the maximum size and maximum variation of clusters. This groups points into clusters of a given size, and removes vertices that are within the maximum variation bound set. In addition, the \texttt{wlop\_simplify\_and\_regularize\_point\_set} tool was used, which supports parallelization out of the box, allowing confuguration of the maximum percentage of points that can be removed, and the closeness of similar points that can be flattened into a single point.
+
+Extensive visual experimentation was done to find settings that maintained the visual accuracy of the topography. The final result reduces the overal mesh size by an average of 60\%.
+
+Pre-processing was found to have far greater performance gains due to the Delaunay triangulation that is required before mesh processing can occurr, in addition to the complexities of maintaining and simplifying a mesh data structure in comparison to a point set. However, certain processing steps were only available once triangulated into a mesh.
+
+\subsubsection{Mesh Processing}
+
+The mesh simplification tool used for this project was initially the \texttt{remesh\_almost\_planar\_patches} utility. This allows sharp edges to be detected and protected, and almost planar (almost flat) regions to be identified. This then simplifies those planar regions. This supported parallelisation, but was found to still be a large performance hit. Additionally, issues with mesh integrity were found, and unresolved issues have been documented on their website. Further developments to this tool may be useful for this project, as this tool does not impact finer details as much as the point-processing method.
+
+What is implemented in the final submission are simple removal of invalid elements, and the removal of duplicate vertices.
 
 \subsection{Features}
 
@@ -622,23 +677,43 @@ This 2D Delaunay triangulation projected onto 3D is less complex than using a 3D
 
 \subsection{Raster Feature Edge Detection}
 
-As mentioned in the design section, raster area features use computer vision to detect the edges and convert them to vector contours. The edge detection itself is handled by the OpenCV library, offering canny edge detection, which detects sharp changes in values (i.e. data borders).
+As mentioned in the design section, raster area features use computer vision to detect the edges and convert them to vector contours. The edge detection itself is handled by the OpenCV library, offering canny edge detection, which detects sharp changes in values (i.e. data borders), which are then converted to a vector of vectors of points representing the contours which are just vectors of points.
 
-The \texttt{CEHTerrainFeature} and \texttt{WaterFeature} show example usage of this technique. First, the
+\subsection{Data Position Alignment}
+
+The position of data points within any GIS dataset is essential to accurately extract when relating the data to our mesh.
+
+Aligning vector data is straightfowards, as each point is defined with a coordiante position in whatever coordinate system is used. As discussed, these datasets can be warped as points are extraced, or preprocessed as done in this implementation with GDAL - this was chosen to maintain a similar workflow to both vector and raster dataset processing.
+
+Raster data required more configuration to align. As raster datasets are ultimately images, data is given in a grid of pixels, where each grid position just gives the value. Metadata in raster GIS datasets allows the coordinate of each pixel to be calculated with this calculation:
+
+% TODO: pixel calculation
 
 
-use the OpenCV computer vision library to detect edges in their raster datasets, and convert them to a vector of vectors representing individual edges to apply as contours.
+To calculate a pixels coordinate, we first take the lower left coordinate of the image stored in the \texttt{ADFGeoTransform} metadata, and then use the cell size metadata, and pixel x,y value, to calculate how far from that lower left coordinate the individual pixel is. The forumula for this is:
 
-\subsection{Raster Position Extraction}
+\begin{align}
+   & x = \text{upper left x} + \text{pixel width} \cdot \text{pixel x} + \text{row rotation} \cdot \text{pixel y}     \\
+   & y = \text{upper left y} + \text{column rotation} \cdot \text{pixel x} + \text{pixel height} \cdot \text{pixel y}
+\end{align}
 
-Relating pixel values to the position
-
+This formula is also useful for applying extracted contours to the TIN, as they are extracted with coordinates relative to the image dimensions and origin.
 
 \subsection{Coordinate System Conversion}
 
 Warping raster datasets requires a different approach than warping vector datasets. For raster data, GDAL's \texttt{GDALWarp} tool was used, which handles resampling and re-projection of datasets. For vector datasets, \texttt{GDALTranslate} was used to warp the vector points and geometries. These tools ensure efficient and accurate coordinate system conversions.
 
 The decision to use GDAL instead of developing custom warping tools was driven by GDAL's proven optimization for performance and memory management. These factors are critical for the efficiency of the routing algorithm, as computational overhead can significantly impact results. GDAL's C++ APIs are well-documented and support a wide range of input file types and projections, streamlining the implementation process.
+
+\subsection{Uniform Cost Search}
+
+The \texttt{Router} class enables a particular search to be conducted. This implements the uniform cost search algorithm, using the defined cost function.
+
+It begins by finding the closest node to the supplied source and target coordinates. An alternative approach would insert these points into the search graph as nodes in the Delaunay triangulation. However, this would need to be done before initialization. Since the point will likely point to a face in the mesh, routing from and to the nearest face is sufficient, as the start and points can be replaced with the supplied coordinates with difference to the routing correctness.
+
+The router initializes a \texttt{TSRState} object, which contains a hashmap using c++ standard library's \texttt{unordered\_map} linking nodes (TIN vertices), to RouteNode which contains information about the cost of the optimal route to  get to that vertex. This is done by storing the optimal parent node, which is an adjacent vertex (i.e. one connected by an edge), that has the lowest cumulative cost to reach that point. A hashmap is used because of the $\mathcal{O} (1)$ time complexity for addition and retrieval, making it a perfect choice for large meshes.
+
+A priority queue is constructed in the router which is added with RouteNodes when a node is searched. The queue is ordered based on the calculated cost, as described in \autoref{section:cs:dt}.
 
 % TODO: Results section
 \section{Results and Analysis}
@@ -650,8 +725,9 @@ This section explores how different configurations and inputs affect the perform
 Objectively determining the quality of the mesh triangulation is not possible, as there are an infinite number of triangulations that could represent the same terrain. However, we can identify features in meshes which may give insights into their quality.
 
 \begin{figure}[!htbp]
+  \centering
   \subfloat[TSR's Solid Mesh] {
-    \includegraphics[width=0.4\textwidth]{assets/benNevis-perspective-solid}.png}
+    \includegraphics[width=0.4\textwidth]{assets/benNevis-perspective-solid.png}
   }
   \subfloat[Google Earth's Topography] {
     \includegraphics[width=0.4\textwidth]{assets/benNevis-gearth.png}
@@ -677,7 +753,7 @@ In addition, the DEM data used fails to accurately model the topography of areas
   }\\
   \subfloat{
     \centering
-    \includegraphics[width=0.8\textwidth]{assets/benNevis_wire.png}\label{fig:mesh:benNevis:wireframe}
+    \includegraphics[width=0.8\textwidth]{assets/benNevis-wire.png}\label{fig:mesh:benNevis:wireframe}
   }
   \caption{Final model of Ben Nevis, with path, water-feature, and terrain-type contours applied. A solid and wireframe render are shown, in both top-down orthographic, and side-on perspective views. Demonstrating a recognizable, but noisy and non-perfectly optimized mesh.}\label{fig:mesh:benNevis}
 \end{figure}
@@ -704,6 +780,33 @@ Performance is analyzed in two parts: search graph construction, and then the ac
 
 % TODO: Evaluation section
 \section{Evaluation and Critical Appraisal}
+
+The results and analysis in the previous section enable an evaluation to be done on the project in reference to the aims and objectives set out in the initial aims and objectives requirements specification. This section will go through each requirement, and discuss the level to which the submission meets each of the given requirements.
+
+\subsection{Aims}
+
+The primary aim for this project was to contribute to the development of tools to make walking and running more accessible to those lacking safe roads, or to those who prefer not being restricted to roads and paths. The routing framework is successful in enabling users to define their own preferences in terms of the features through the configuration of features, and the cost function as a whole.
+
+\subsection{Primary Objectives}
+
+\subsubsection{Modular Routing Algorithm}
+
+\subsubsection{Route Visualization}
+
+\subsubsection{Multiple Cost-Function Presets}
+
+\subsection{Secondary Objectives}
+
+\subsubsection{Critical Analysis of Presets}
+
+\subsubsection{Additional Cost Function Features}
+
+\subsection{Tertiary Objectives}
+
+\subsubsection{Interactive User Interface}
+
+\subsection{Route Generation Animation}
+
 
 % TODO: Potential Improvement & Future Projects
 \section{Potential Improvements \& Future Projects}
@@ -749,6 +852,27 @@ Due to new stack frames being generated at each function call, the current recur
 This may involve using the FeatureManager to handle all calculate requests. Instead of features directly calling calculate to their dependencies and casting these results, the feature manager could maintain a list of the dependencies, and iteratively follow the DAG, not calling calculate until a leaf-node is found (one with no dependencies). The leaf nodes could then be calculated and their values passed as input when calling calculate on its dependent.
 
 However, challenges arise in maintaining the ability for features to output any type, as the feature manager would have to be able to handle the arbitrary output type, and input it into features.
+
+\subsection{Improve Contour Extraction}
+
+The current implementation allows relevant data features to specify the level of simplification is applied to the contours extracted from datasets. This is suitable for binary data such as water which either exists or not. However, for categorical data, all borders are simplified to the same extent. In the case of datasets such as terrain data, it may be helpful to be able to specify the level of simplification for each data value - enabling stricter borders to be represented around hazardous terrain types such as bog.
+
+\subsection{Representating}
+
+The current implementation fails to properly represent streams. The WaterFeature data from openstreemaps gives the geometry of most water features. However, very thin and sometimes large water features (such as streams) can be represented as vectr lines with no geometry. This means the face-tagging approach used for water features does not accurately represent these water features.
+
+A potential solution would be to seek alternative datasets specifically designed to represent water geometry. Alternatively, it may be possible to pre-process these water features, and thicken their line width. By enforcing a minimum line-size, we can ensure faces are created and tagged. However, this approach does not perfectly model the real-world, and so further options may be optimal.
+
+\subsection{Interactive Cost Function Configuration UI}
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=\textwidth]{assets/blender-compositor.png}
+  \caption{Blender's compositor interface, allowing interactive customisation of the rendering pipeline. Image taken from Blender's user manual \autocite{blenderCompositor}.}
+  \label{fig:blender-compositor}
+\end{figure}
+
+A user interface enabling users to drag and drop features onto a user interface, and control the configuration options interactively would be a huge development towards this tool being useful for a general audience. \autoref{fig:blender-compositor} shows Blender's compositor tool, allowing users to define their own DAG for how an object and scene gets rendered. This same interface could be applied to this routing algorithm, which features as nodes, connected defining dependency relationships, and options within the nodes relating to the configuation options. This interface could output either code to be used in preset setup, or it could output JSON, which could be parsed by a FeatureManager and setup.
 
 % TODO: Conclusion
 \section{Conclusion}
@@ -796,14 +920,14 @@ This project could benefit immensely from a higher resolution DEM dataset, along
   To build the library and router, first setup the build directory:
 
   \begin{lstlisting}[language=bash]
-  \$ cd tsr-cli
-  \$ mkdir build && cd build
+  $ cd tsr-cli
+  $ mkdir build && cd build
 \end{lstlisting}
 
   \noindent Then configure with \texttt{cmake}, making sure to set configuration option values as appropriate:
 
   \begin{lstlisting}[language=bash]
-  \$ cmake .. -G Ninja -DCMAKE_BUILD_TYPE= -DTSR_TEST=
+  $ cmake .. -G Ninja -DCMAKE_BUILD_TYPE= -DTSR_TEST=
 \end{lstlisting}
 
   \vspace*{-2em}
@@ -823,16 +947,16 @@ This project could benefit immensely from a higher resolution DEM dataset, along
 
   \begin{lstlisting}[language=bash]
   # Compile everything
-  \$ ninja
+  $ ninja
 
   # Compile just the library
-  \$ ninja tsr
+  $ ninja tsr
 
   # Compile the tests
-  \$ ninja test-tsr
+  $ ninja test-tsr
 
   # Compile the cli application
-  \$ ninja tsr-cli
+  $ ninja tsr-cli
 \end{lstlisting}
 
   \pagebreak
@@ -857,8 +981,8 @@ This project could benefit immensely from a higher resolution DEM dataset, along
   For the web application, run the development server with the following:
 
   \begin{lstlisting}[language=bash]
-  \$ cd tsr-ui
-  \$ npm run dev
+  $ cd tsr-ui
+  $ npm run dev
 \end{lstlisting}
 
   \pagebreak
