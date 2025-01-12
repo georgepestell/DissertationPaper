@@ -803,25 +803,25 @@ The primary aim for this project was to contribute to the development of tools t
 
 \subsection{Tertiary Objectives}
 
-\subsubsection{Interactive User Interface}
+Neither of the tertiary objectives were met due to time restictions. However, some consideration of the interactive user interface was put into the design of the cost function framework to allow future development to implement an interactive configuration interface.
 
-\subsection{Route Generation Animation}
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=\textwidth]{assets/blender-compositor.png}
+  \caption{Blender's compositor interface, allowing interactive customisation of the rendering pipeline. Image taken from Blender's user manual \autocite{blenderCompositor}.}
+  \label{fig:blender-compositor}
+\end{figure}
 
+A user interface enabling users to drag and drop features onto a user interface, and control the configuration options interactively would be a huge development towards this tool being useful for a general audience. \autoref{fig:blender-compositor} shows Blender's compositor tool, allowing users to define their own DAG for how an object and scene gets rendered. This same interface could be applied to this routing algorithm, which features as nodes, connected defining dependency relationships, and options within the nodes relating to the configuation options. This interface could output either code to be used in preset setup, or it could output JSON, which could be parsed by a FeatureManager and setup.
 
 % TODO: Potential Improvement & Future Projects
 \section{Potential Improvements \& Future Projects}
 
-This project aimed at forwarding research into accessible off-road route planning. Due to the scale of route planning off-road, and the limited previous research, this solution to the problem is not perfect. This section discusses these potential improvements in detail, along with a discussion of some of the extraneous research that would need to be done to solve some of the limitations of this project.
+This project aimed at forwarding research into accessible off-road route planning. Due to the scale of route planning off-road, and the limited previous research, this solution to the problem is not perfect. This section discusses these potential improvements in detail in addition to those discussed in the evaluation section. In addition, a discussion discussed research that would be required in other fields to solve some of the limitations of this project.
 
-\subsection{Parallel Route Search}
+\subsection{Parallellised Feature Setup}
 
-% TODO: threading search
-% TODO: threading feature initialization / pre-processing
-% TODO: use a database for caching datasets
-% TODO: errors around the sides of meshes
-% TODO: further mesh optimizations / processing
-% TODO: caching of results when features used in multiple parts of cost function
-% TODO: analysis of tile size for API / cache calls - potentially separate API call tile size and cache tile size
+Where this implementation parallelizes mesh construction, the setup of individual features could be parallelized. However, this would require careful consideration as it may be desireable to allow features to interact in the setup phase, to allow for caching of calculated values using dependencies. A very basic parallelization that would not require these considerations would be of the API calling and chunking of data features, as with the TIN construction from DEM data.
 
 \subsection{Modelling Features}
 
@@ -863,18 +863,6 @@ The current implementation fails to properly represent streams. The WaterFeature
 
 A potential solution would be to seek alternative datasets specifically designed to represent water geometry. Alternatively, it may be possible to pre-process these water features, and thicken their line width. By enforcing a minimum line-size, we can ensure faces are created and tagged. However, this approach does not perfectly model the real-world, and so further options may be optimal.
 
-\subsection{Interactive Cost Function Configuration UI}
-
-\begin{figure}[!htbp]
-  \centering
-  \includegraphics[width=\textwidth]{assets/blender-compositor.png}
-  \caption{Blender's compositor interface, allowing interactive customisation of the rendering pipeline. Image taken from Blender's user manual \autocite{blenderCompositor}.}
-  \label{fig:blender-compositor}
-\end{figure}
-
-A user interface enabling users to drag and drop features onto a user interface, and control the configuration options interactively would be a huge development towards this tool being useful for a general audience. \autoref{fig:blender-compositor} shows Blender's compositor tool, allowing users to define their own DAG for how an object and scene gets rendered. This same interface could be applied to this routing algorithm, which features as nodes, connected defining dependency relationships, and options within the nodes relating to the configuation options. This interface could output either code to be used in preset setup, or it could output JSON, which could be parsed by a FeatureManager and setup.
-
-% TODO: Conclusion
 \section{Conclusion}
 
 To conclude, the success of this project hinges on its developments into the understanding of the possibilities and barriers to the creation of generalized off-road route planning. The resulting application has a broad capacity to model both mathematical concepts, and physical/psychological research into the impact certain terrain features such as terrain-type, gradient, and fear has on route preference. The potential for further developments and research present a promising opportunity to improve accessibility to walking and running as a form of transportation.
