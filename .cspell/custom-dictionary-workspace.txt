@@ -1,0 +1,7 @@
+# Custom Dictionary Words
+chktex
+GDAL
+GDALTranslate
+GDALWarp
+Nord
+traversability

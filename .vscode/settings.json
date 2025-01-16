@@ -24,5 +24,14 @@
   "cSpell.ignoreWords": [
     "DCMAKE",
     "DTSR"
-  ]
+  ],
+  "cSpell.customDictionaries": {
+    "custom-dictionary-workspace": {
+      "name": "custom-dictionary-workspace",
+      "path": "${workspaceFolder:dissertation}/.cspell/custom-dictionary-workspace.txt",
+      "addWords": true,
+      "scope": "workspace"
+    }
+  },
+  "ltex.additionalRules.enablePickyRules": true,
 }
