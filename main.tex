@@ -34,36 +34,37 @@
 %TC:endignore
 
 \lstset{
-  basicstyle = \footnotesize\ttfamily,
-  columns = fullflexible,
-  showlines=true,
-  backgroundcolor=\color{nord6},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
-  captionpos=b,                    % sets the caption-position to bottom
-  commentstyle=\color{nord3}\textit,    % comment style
-  % deletekeywords={...},            % if you want to delete keywords from the given language
-  escapeinside={\%*}{*},          % if you want to add LaTeX within your code
-  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
-  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
-  keywordstyle=\color{nord9}\bfseries,       % keyword style
-  otherkeywords={*} % if you want to add more keywords to the set
-  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
-  numbersep=5pt,                   % how far the line-numbers are from the code
-  numberstyle=\tiny\color{nord15}, % the style that is used for the line-numbers
-  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
-  showstringspaces=false,          % underline spaces within strings only
-  showtabs=false,                  % show tabs within strings adding particular underscores
-  stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
-  stringstyle=\color{nord14}, % string literal style
-  tabsize=2,	                   % sets default tabsize to 2 spaces
-  title=\lstname,                  % show the filename of files included with \lstinputlisting; also try caption instead of title
-  columns=fixed                    % Using fixed column width (for e.g. nice alignment)
+	basicstyle = \footnotesize\ttfamily,
+	columns = fullflexible,
+	showlines=true,
+	backgroundcolor=\color{nord6},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+	captionpos=b,                    % sets the caption-position to bottom
+	commentstyle=\color{nord3}\textit,    % comment style
+	% deletekeywords={...},            % if you want to delete keywords from the given language
+	escapeinside={\%*}{*},          % if you want to add LaTeX within your code
+	extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+	keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+	keywordstyle=\color{nord9}\bfseries,       % keyword style
+	otherkeywords={*} % if you want to add more keywords to the set
+	numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+	numbersep=5pt,                   % how far the line-numbers are from the code
+	numberstyle=\tiny\color{nord15}, % the style that is used for the line-numbers
+	showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+	showstringspaces=false,          % underline spaces within strings only
+	showtabs=false,                  % show tabs within strings adding particular underscores
+	stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+	stringstyle=\color{nord14}, % string literal style
+	tabsize=2,	                   % sets default tabsize to 2 spaces
+	title=\lstname,                  % show the filename of files included with \lstinputlisting; also try caption instead of title
+	columns=fixed                    % Using fixed column width (for e.g. nice alignment)
 }
 \surroundwithmdframed[
-  hidealllines=true,
-  backgroundcolor=nord6,
-  innerleftmargin=8pt,
-  innertopmargin=0.75em,
-  innerbottommargin=-1.25em]{lstlisting}
+	hidealllines=true,
+	backgroundcolor=nord6,
+	innerleftmargin=8pt,
+	skipbelow=0,
+	innertopmargin=0.75em,
+	innerbottommargin=-1.5em]{lstlisting}
 
 \usepackage{fancyhdr}
 
@@ -242,7 +243,7 @@ The process of creating Delaunay triangulations aims to take a point set, and cr
 
 \begin{enumerate}[(1)]
   \item vertices in the given edge are on the boundary of the circle, and
-        \clearpage\item all other vertices are outside C
+  \item all other vertices are outside C
 \end{enumerate}
 
 Changing the edges connecting vertices to meet these criteria promotes the generation of triangle faces with as close to equilateral triangles as possible, maximizing the minimum angle. This approach minimizes the number of very thin triangles \autocite{preparata2012computational}. This is important for creating useful surface meshes, as very thin faces increases the risk of precision errors  representation.
@@ -297,7 +298,6 @@ However, the drawbacks to this approach exist. First, the cost function itself i
 \textcite{evans2023tsr} chose a regular square-based surface mesh to represent the graph, also based solely on elevation data. Search nodes were used to represent mesh vertices, and search edges represented mesh edges. However, the faces used to represent the terrain were regularly sized, which is not optimal as flat areas can be simplified to space and time complexity for setup and search. Evans found that the routing time and mesh generation scaled linearly proportional to the number of nodes in the graph, which may offer a strong performance benefit if the graph structure could be optimized.
 
 
-% TODO: Walking Speed - Gradient, Default Walking Speed
 \subsubsection{Walking Speed}
 
 Limited research exists into the impacts of certain off-road features on walking speed which may be useful in quantifying features in the cost function. \autocite{horiuchi2015comparisons} gives some limited quantification and comparison of economical walking speeds at different gradients for active young and older adults. They showed there is a large difference between these values for the different age groups. Quantification of the impact of gradient on walking speed is important as gradient is one of the primary factors in walking speed for any terrain, and so is essential for any successful terrain sensitive route planner to account for.
@@ -691,18 +691,21 @@ The mesh simplification tool used for this project was initially the \texttt{rem
 
 What is implemented in the final submission are simple removal of invalid elements, and the removal of duplicate vertices.
 
-% TODO: Features Overall Implementation
 \subsection{Features}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{assets/FeatureBase.png}
-  \caption{UML diagram showing the basic \texttt{FeatureBase} and Feature interfaces, with the specialized \texttt{APIFeature} interface, and two example of actual Features that can be instantiated.}\label{impl:features:uml}
+  \caption{UML diagram showing the basic \texttt{FeatureBase} and Feature interfaces, with the specialized \texttt{DataFeature} interface, and two example of actual Features that can be instantiated.}\label{impl:features:uml}
 \end{figure}
 
 \subsubsection{Setup}
 
 The \texttt{initialize} and \texttt{tag} methods are abstract/virtual, meaning each feature must define their own methods following this template. This allows features to implement empty methods if no configuration is required, such as a purely mathematical feature such as the gradient or distance features, or call APIs and cache results such as with the \texttt{PathFeature}, \texttt{WaterFeature}, and \texttt{CEHTerrainFeature}.
+
+\subsubsection{Dependencies}
+
+Features communicate through dependencies, and define the DAG cost function structure. By default, the \texttt{add\_dependency} functionality inherited by all features adds the pointer to the dependency to the \texttt{dependencies} vector. This means that the order dependencies are added is essential to fetching the results. For example, the \texttt{ConditionalFeature} requires the conditional dependency to be added first, then the true condition, and finally the false condition. Dependencies will often use a \texttt{DEPENDENCIES} enum internally to give names to this order to make code easier to read (see \autoref{fig:conditional} for an example).
 
 \subsection{Raster Feature Edge Detection}
 
@@ -723,44 +726,258 @@ Raster data required more configuration to align. As raster datasets are ultimat
 
 This formula is also useful for applying extracted contours to the TIN, as they are extracted with coordinates relative to the image dimensions and origin.
 
-%TODO: Data Features Implementation
 \subsection{Data Features}
 
-%TODO: Water Feature Implementation
+Data features are those features which require the use of API or local data sources. This includes: water data, path/road data, and terrain type data. The \texttt{DataFeature} abstract class is designed to support the construction of new data feature classes, adding a \texttt{ChunkManager} attribute, which enables automatic fetching of required chunks from the API and caching --- making extension of this project with new data simpler.
+
+\begin{figure}[H]
+  \centering
+  \begin{lstlisting}[language=c++]
+	class ChunkManager {
+		std::string url;
+	
+		double tile_size;
+		std::string api_key;
+		std::vector<int> position_order;
+	
+	public:
+		ChunkManager(std::string url, double tile_size,
+								 std::vector<int> position_order, std::string api_key)
+				: url(url), tile_size(tile_size), api_key(api_key),
+					position_order(position_order) {}
+
+		std::vector<ChunkInfo> GetRequiredChunks(const MeshBoundary &boundary) const;
+
+		ChunkInfo GetChunkInfo(double lat, double lng) const;
+		std::string FormatUrl(const ChunkInfo &chunk) const;
+	
+		DataFile FetchVectorChunk(const ChunkInfo &chunk) const;
+		DataFile FetchAndRasterizeVectorChunk(const ChunkInfo &chunk,
+		DataFile FetchRasterChunk(const ChunkInfo &chunk) const;
+
+		bool IsAvailableInCache(const std::string &feature_id,
+														const ChunkInfo &chunk);
+	};
+	\end{lstlisting}
+  \caption{\texttt{ChunkManager} class, which enables easy setup and interface for Data Features to  interact the API/cache.}
+  \label{lst:chunkmanager}
+\end{figure}
+
+Different features can define a tile size, allowing datasets with varying resolutions to be handled efficiently, without requesting too much or too little data in one chunk. Each tile chunk is represented by the latitude and longitude coordinates of its southwestern and northeastern corners in the WGS84 projection --- the standard projection for GIS datasets. The southwestern tile position is determined by rounding the latitude and longitude values down to a multiple of the tile size. By adding the tile size to these values, we get the northeastern corner.
+
+The \texttt{ChunkManager} is setup by the \texttt{DataFeature} object with a URL specifying the location of the API to fetch data from. GIS API endpoints usually function throughout the specification of the resource, with a bounding box given in latitude and longitude coordinates: the \texttt{position\_order} vector in \autoref{lst:chunkmanager} is used to specify the order of the minimum and maximum latitude and longitude values. Some APIs (e.g. OpenStreetMap's Overpass API) enable fetching of multiple data types in one request, and so the \texttt{url} contains \texttt{\{\}} representing values replacements, with the coordinate specified in the \texttt{position\_order} vector. This standard makes it simple to introduce new and more complex API data features.
+
 \subsubsection{Water Feature}
 
-% TODO: Path Feature Implementation
+\begin{figure}[H]
+  \centering
+  \begin{lstlisting}
+	https://lz4.overpass-api.de/api/interpreter?data=
+	[out:xml][timeout:25];
+	(nwr["natural"="bay"]({},{},{},{});
+	nwr["natural"="water"]({},{},{},{});
+	nwr["natural"="coastline"]({},{},{},{});
+	);
+	(._;>;);
+	out body;{}
+	\end{lstlisting}
+  \caption{Decoded and formatted URL used to fetch the water data from the OpenStreetMap Overpass API.}
+  \label{url:water}
+\end{figure}
+
+OpenStreetMap (OSM) data was chosen to fetch water features due to its higher resolution compared to the terrain type data from CEH. OSM represents features in vector format; giving very high positional resolution. These edges could be directly added as contours to the mesh. However, certain water features such as coastal barriers, and small streams are represented as lines with no geometry, making it challenging to determine which side of the line has water.
+
+It may be possible in future research to use the fact that the ordering of coastal and lakes edges follows the right-hand rule, where following the order implies the right-hand side is filled with water. However, rasterization is used to simplify the tagging process, as the relevant pixel values can be fetched from the datasets.
+
+OpenCV edge detection is used on the rasterized dataset to re-fetch data edges. This ensures that any rasterization resolution changes are reflected in the contours applied to the mesh. Otherwise, additional contours may be applied erroneously, as the faces would be tagged incorrectly due to the pixel values in the raster dataset being incorrect.
+
+\autoref{url:water} gives the URL format used for this \texttt{DataFeature}. OSM offers three categories of water features with geometry which are all fetched. No API key is required.
+
 \subsubsection{Path Feature}
 
-% TODO: CEH Feature Implementation
+\begin{figure}[H]
+  \centering
+  \begin{lstlisting}
+	https://lz4.overpass-api.de/api/data=
+	[out:xml][timeout:25];
+	(
+		way["highway"]({},{},{},{});
+	);
+	(._;>;);
+	out+body
+	{}
+	\end{lstlisting}
+  \caption{Decoded and formatted URL used to fetch the paths and roads from the Overpass API.}
+  \label{url:paths}
+\end{figure}
+
+OpenStreetMap data was also used to fetch paths and roads. These vector edges are directly applied to the mesh. \autoref{url:paths} shows the URL used, which fetches all roads and paths in one request.
+
+This returns an XML dataset with the geometry of each road, along with a vast amount of metadata for each path/road. This data could be greatly useful in further developments (see. \autoref{section:improvements:paths}).
+
+The XML data is converted to GeoJSON during warping using a JSON parser. This functionality is added as it enables new vector features to use JSON without additional library requirements, and reduces the likelihood of bugs in code fundamentally tangential to the aims and objectives of this project.
+
+These paths are then stored as points in a \texttt{map} of road segments as coordinate pairs. This enables checking if the current edge's vertices match the location of a road segment, which is done in $\mathcal{O} (1)$ time regarding the number of path segments added. In urban areas, this number is potentially extremely large as geometry of the roads is represented, and so this performance characteristic is essential.
+
 \subsubsection{CEH Terrain Type Feature}
 
-% TODO: Calculated Features Implementation
+\begin{figure}[H]
+  \centering
+  \begin{lstlisting}
+	https://catalogue.ceh.ac.uk/maps/4728dd2d-064f-4532-be85-ecafc283bdcf?language=eng
+	&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap
+	&CRS=CRS:84&LAYERS=LC.10m.GB&STYLE=default
+	&BBOX={},{},{},{}
+	&FORMAT=image/tiff
+	&WIDTH=2048&HEIGHT=2048{}";
+	\end{lstlisting}
+  \caption{Decoded and formatted URL used to fetch the terrain type data from the CEH API.}
+  \label{api:terrain}
+\end{figure}
+
+The raster terrain data from the Centre for Ecology and Hydrology (CEH) was used as it offers a diverse categorization of the land-use of terrains in a raster image. The edge detection is used to fetch the boundaries for this data. A challenge for this was in detecting the borders between the RGB values which are represented each as their own layer in the dataset files.
+
+The simplest method to fetching each contour between colours in each band would be to run the detection in each band separately, and then combine the edges. This is successful, but results in duplicate edges in areas where differences exist between colours in two or more of the RGB channels. To remove the need to process these edges after edge detection, and to reduce the processing requirements, the images can be converted to greyscale. This solves the previous issues, but greyscale fails to result in edges being detected where the contrast/brightness of two colours is not great enough. For this dataset in particular, this issue was not encountered, but further development may require more complex processes to extract multilayer contours using computer vision.
+
+\begin{figure}[H]
+  \centering
+  \begin{lstlisting}[language=c++]
+	std::map<uint32_t, CEH_TERRAIN_TYPE> CEHTerrainFeature::TERRAIN_COLOURS = {
+		{0xFF0000, BROADLEAVED_MIXED_AND_YEW_WOODLAND},
+		{0x006600, CONIFEROUS_WOODLAND},
+		{0x732600, ARABLE_AND_HORTICULTURE},
+		{0x00FF00, IMRPOVED_GRASSLAND},
+		{0x7FE57F, NEUTRAL_GRASSLAND},
+		{0x70A800, CALCAREOUS_GRASSLAND},
+		{0x998100, ACID_GRASSLAND},
+		{0xFFFF00, FEN_MARSH_AND_SWAMP},
+		{0x801A80, HEATHER},
+		{0xE68CA6, HEATHER_GRASSLAND},
+		{0x008073, BOG},
+		{0xD2D2FF, INLAND_ROCK},
+		{0xCCB300, SUPRALITTORAL_ROCK_AND_SEDIMENT},
+		{0xFFFF80, LITTORAL_ROCK_AND_SEDIMENT},
+		{0x8080FF, SALTMARSH},
+		{0x000000, URBAN},
+		{0x808080, SUBURBAN},
+		{0xFFFFFF, NO_DATA},
+	};
+	\end{lstlisting}
+  \caption{Map used to associate the pixel colour value from the terrain data with the terrain type.}
+  \label{terrain:map}
+\end{figure}
+
+The \texttt{CEH\_TERRAIN\_TYPE} enum gives the terrain types supported by the dataset, along with a \texttt{NO\_DATA} value in case of errors. Faces are tagged with these values, by getting the pixel value at the centre point of each face, and interpreting that value directly using the \texttt{std::map<uint32\_t, CEH\_TERRAIN\_TYPE>} data structure shown in \autoref{terrain:map} --- this allows the raw pixel value to be used to fetch an enum value. This reduces the storage requirements for the tagging of faces, as the pixel values are 32 bit (4 byte) integers, whereas enum vales take up just 1 byte per value as there are fewer than 256 categories.
+
+To demonstrate the framework's flexibility, this feature directly outputs the speed multiplier, as opposed to relying on a relational feature to interpret the result as a speed multiplier, as shown with the gradient feature and water feature.
+
 \subsection{Calculated Features}
 
 Calculated features calculate some feature using other data features or the underlying mesh. The two given examples of this type of feature are the distance and gradient features.
 
-% TODO: Relational Features Implementation
 \subsection{Relational Features}
 
-Relational features enable raw data features to be related to specific factors.
+Relational features enable the raw data features to be related to specific factors.
 
-% TODO: Gradient Speed Feature Implementation
 \subsubsection{Gradient Speed Feature}
 
-For example, the \texttt{horiuchi2015comparisonsFeature} enables the raw gradient of a search edge to be converted to a speed multiplier.
+This feature models the results from \textcite{horiuchi2015comparisons}, implementing a polynomial curve that takes the input gradient $x$, and outputs the relative walking speed as a percentage multiplier $y$.
 
-% TODO: Logic Features Implementation
+\begin{figure}[H]
+  \centering
+  \subfloat[Negative Gradient Speed Polynomial] {
+    \includegraphics[width=0.45\textwidth]{assets/poly-negGrad.png}
+  }
+  \subfloat[Positive Gradient Speed Polynomial] {
+    \includegraphics[width=0.45\textwidth]{assets/poly-posGrad.png}
+  }
+  \caption{Visual representation of the polynomials used in the \texttt{GradientSpeedFeature} to convert an input gradient $x$ to speed multiplier $y$.}
+  \label{fig:gradspeed}
+\end{figure}
+
+To reduce computational complexity of solving these polynomials, the polynomial is split into two models: one for positive gradients, and another for negative gradients, with polynomial degree 5 and 6 respectively (see. \autoref{fig:gradspeed}). This approach reduces the number of multiplications required to solve, adding just a single sign check for the input gradient to direct solving to the correct model. The polynomials are customizable through the setting of the \texttt{positive\_coefficients}, and \texttt{negative\_coefficients} vectors.
+
+The gradient of a terrain is constrained at all points to a range of -1 and 1, representing a range of 90 to -90. This is the case because gradients beyond these limits imply a reversal in direction, bringing the gradient back to within this range. Therefore, the polynomial outputs beyond these $x$ ranges do not need to be accurate. Both positive and negative gradients include maximum and minimum values where traversal is not possible. This is represented by the speed output returning a value $\leq{0}$, which is then snapped to 0, ensuring speeds remains non-negative.
+
 \subsection{Logic Features}
 
-% TODO: Multiplier Feature Implementation
+Logic features are (usually) simple mathematical features, which take the value from one feature, or change the control flow of the cost function dependent on dependency output. These features likely do not require initialization or tagging logic, except potentially for caching results (the example implementations use the default blank logic).
+
+\subsubsection{Inverse Feature}
+
+The inverse feature is a simple feature used for division and as a basic relational feature for non-traversable features to be converted to a 0/1 speed multiplier.
+
+Inverse features are defined using two template parameters, defining the input and output type. Each supported combination is defined independently which impacts the invert behaviour depending on the desired output.
+
+Boolean to boolean inverting is simple, and implemented using \texttt{!} boolean inverting of the dependency value.
+
+\begin{figure}[H]
+  \centering
+  \begin{lstlisting}
+	template <>
+	inline double InverseFeature<double, double>::Calculate(TsrState &state) {
+
+		auto feature =
+				std::dynamic_pointer_cast<Feature<double>>(this->dependencies[VALUE]);
+
+		double value = feature->Calculate(state);
+
+		if (value == 0) {
+			return std::numeric_limits<double>::infinity();
+		}
+
+		return 1 / value;
+	}
+	\end{lstlisting}
+  \caption{The implementation of the \texttt{InverseFeature} with \texttt{<bool,bool>} as input and output template parameters.}
+  \label{lst:invert:doubledouble}
+\end{figure}
+
+For double to double inversion, the desire is to enable division, modelling $\frac{1}{x}$. To prevent division by zero, a check for $x = 0$ is done beforehand. This behaviour is undefined in mathematics, but the decision to return infinity was decided, because as $x \rightarrow{} 0$, the value $\frac{1}{x} \rightarrow{} \text{infinity}$. The implementation can be seen in \autoref{lst:invert:doubledouble}.
+
 \subsubsection{Multiplier Feature}
 
-% TODO: Invert Feature Implementation 
-\subsubsection{Invert Feature}
+The \texttt{add\_dependency} method is changed for this feature, to specify the input type of the dependency. Features by default must know in advance the input types, but this feature supports dynamic types through specifying the \texttt{DEPENDENCY\_TYPE}. Currently, \texttt{double}, \texttt{int}, and \texttt{bool} values are supported --- this is likely sufficient to model most features, as it allows floating point, integer, and snapping with boolean values.
 
-% TODO: Conditional Feature Implementation
+The \texttt{Calculate} implementation fetches the values from each dependency. A default output of 1 is used if there are no dependencies, which enables this value to be multiplied by the values directly without affecting the correctness of the output (as $x \times{1} = x$). The output is modelled as a double, requiring casting \texttt{int} values before multiplication. For boolean values, \texttt{true} values multiply the output by 1, and \texttt{false} multiplies by 0. This boolean multiplication enables the inverse of existence for untraversable features to be directly multiplied with the speed multiplier feature, reducing the overall feature complexity and thus improving performance. Any multiplication by 0 results in an early output of 0, as any further multiplications follow the rule $0 \times{x} = 0$. This reduces the number of computations if 0 values are set as early dependencies.
+
 \subsubsection{Conditional Feature}
+
+Conditional features enable change in control flow, and are used by the default preset to override (i.e. not check for) water and terrain factors where paths exist.
+
+\begin{figure}[H]
+  \centering
+  \begin{lstlisting}
+	template <typename DataType>
+	class ConditionalFeature : public Feature<DataType> {
+	private:
+		enum DEPENDENCIES { CONDITIONAL, A, B };
+
+	public:
+		using Feature<DataType>::Feature;
+
+		DataType Calculate(TsrState &state) override {
+
+			auto conditionalFeature = std::dynamic_pointer_cast<Feature<bool>>(
+					this->dependencies[CONDITIONAL]);
+
+			if (conditionalFeature->Calculate(state)) {
+				auto feature =
+						std::dynamic_pointer_cast<Feature<double>>(this->dependencies[A]);
+				return feature->Calculate(state);
+			} else {
+				auto feature =
+						std::dynamic_pointer_cast<Feature<double>>(this->dependencies[B]);
+				return feature->Calculate(state);
+			}
+		}
+	};
+	\end{lstlisting}
+  \caption{\texttt{ConditionalFeature} implementation, showing the dependency order is named through the \texttt{DEPENDENCIES} enum, and values only calculated when required.}
+  \label{fig:conditional}
+\end{figure}
+
+To support any data type to enable further developers to create their own presets, the conditional feature is constructed so that the first dependency added must have a boolean output type. This is used as the conditional, and then two other dependencies are required, both matching the output type specified with the \texttt{DataType} template parameter (see. \autoref{fig:conditional}). The values of the output are only requested once the conditional value is known, improving performance, as both branches are never both evaluated.
 
 \subsection{Coordinate System Conversion}
 
@@ -773,27 +990,27 @@ The decision to use GDAL instead of developing custom warping tools was driven b
 \begin{figure}[H]
   \centering
   \begin{lstlisting}[language=c++]
-// Step 1. Check exit conditions
-while (!this->state.routes.contains(this->state.end_vertex)) {
+	// Step 1. Check exit conditions
+	while (!this->state.routes.contains(this->state.end_vertex)) {
 
-  // Step 2. Select next node
-  RouteNode current_node = cost_queue.top();
-  cost_queue.pop();
-  
-  // Check if the best route is untraversable
-  if (current_node.gCost == std::numeric_limits<double>::infinity()) {
-    // ...
-    throw std::runtime_error("Could not find safe path");
-  }
+		// Step 2. Select next node
+		RouteNode current_node = cost_queue.top();
+		cost_queue.pop();
+		
+		// Check if the best route is untraversable
+		if (current_node.gCost == std::numeric_limits<double>::infinity()) {
+			// ...
+			throw std::runtime_error("Could not find safe path");
+		}
 
-  // Record the best-known route to this vertex
-  this->state.routes[current_node.vertex] = current_node;
-  this->state.current_vertex = current_node.vertex;
+		// Record the best-known route to this vertex
+		this->state.routes[current_node.vertex] = current_node;
+		this->state.current_vertex = current_node.vertex;
 
-  // Step 3. Calculate neighbour cost
-  // ...
-}
-\end{lstlisting}
+		// Step 3. Calculate neighbour cost
+		// ...
+	}
+	\end{lstlisting}
   \caption{The main uniform cost search algorithm implementation.}
   \label{fig:impl:search:mainloop}
 \end{figure}
@@ -811,37 +1028,37 @@ When routing an infinite cost (defined using \texttt{std::numeric\_limits}) repr
 \begin{figure}[H]
   \centering
   \begin{lstlisting}[language=c++]
-  // Get the faces connected to the vertex
-  auto faceCirculator = current_node.vertex->incident_faces();
+	// Get the faces connected to the vertex
+	auto faceCirculator = current_node.vertex->incident_faces();
 
-  // Validate there is at least 1 connected face
-  if (faceCirculator != nullptr) {
-    auto faceCirculatorEnd = faceCirculator;
-    do {
-      auto face = faceCirculator;
-      if (dtm.is_infinite(face)) {
-        continue;
-      }
+	// Validate there is at least 1 connected face
+	if (faceCirculator != nullptr) {
+		auto faceCirculatorEnd = faceCirculator;
+		do {
+			auto face = faceCirculator;
+			if (dtm.is_infinite(face)) {
+				continue;
+			}
 
-      // Search each vertex in each face
-      for (int i = 0; i < 3; i++) {
-        Vertex_handle connectedVertex = face->vertex(i);
+			// Search each vertex in each face
+			for (int i = 0; i < 3; i++) {
+				Vertex_handle connectedVertex = face->vertex(i);
 
-        // Skip if it is the same vertex or already visited or out-of-bounds
-        if (connectedVertex == current_node.vertex) { continue; }
-        if (this->state.routes.contains(connectedVertex)) { continue; }
-        if (!boundary.IsBoundedSafe(connectedVertex->point())) { continue; }
+				// Skip if it is the same vertex or already visited or out-of-bounds
+				if (connectedVertex == current_node.vertex) { continue; }
+				if (this->state.routes.contains(connectedVertex)) { continue; }
+				if (!boundary.IsBoundedSafe(connectedVertex->point())) { continue; }
 
-        // Calculate cost
-        RouteNode node(connectedVertex, face);
-        this->state.next_vertex = connectedVertex;
-        node.gCost = current_node.gCost + CalculateTrivialCost(fm, this->state);
-        node.parent = current_node.vertex;
+				// Calculate cost
+				RouteNode node(connectedVertex, face);
+				this->state.next_vertex = connectedVertex;
+				node.gCost = current_node.gCost + CalculateTrivialCost(fm, this->state);
+				node.parent = current_node.vertex;
 
-        cost_queue.push(node);
-      }
-    } while (++faceCirculator != faceCirculatorEnd);
-  }
+				cost_queue.push(node);
+			}
+		} while (++faceCirculator != faceCirculatorEnd);
+	}
 \end{lstlisting}
   \caption{The process of searching neighbouring search node edges using the TIN mesh representation.}
   \label{fig:impl:search:edges}
@@ -850,10 +1067,6 @@ When routing an infinite cost (defined using \texttt{std::numeric\_limits}) repr
 After selecting the next node, the costs of traversing over edges to connected nodes is done. Each edge in the TIN mesh corresponds to one or two search edges, as we associate a particular search with a face, and edges in the TIN are connected to a maximum of two faces. This enables following data contours along either side using the same edge such as following alongside the edge of a river.
 
 The process of selecting and calculating costs of adjacent nodes is give in \autoref{fig:impl:search:edges}. Initially, due to each node requiring up to two searches per face, testing was done by fetching the connected edges, and then the two connected faces of those edges if the target node was not already searched. However, due to the \texttt{incident\_edges} and \texttt{incident\_faces} having to traverse the mesh in CGAL, a faster approach is to fetch the incident faces to the current vertex, and then validate each vertex connected. This requires repeated checks for the same nodes, but only requires one mesh traversal \texttt{incident\_faces}, as vertices can be fetched directly using \texttt{face\_handle.vertex(i)} where \texttt{i} is the vertex index (1,2 or 3).
-
-\subsubsection{Route Reconstruction}
-
-The final stage of reconstructing the suggested route
 
 \section{Results and Analysis}
 
@@ -1112,7 +1325,7 @@ The current implementation fails to properly represent streams. The \texttt{Wate
 
 A potential solution would be to seek alternative datasets specifically designed to represent water geometry. Alternatively, it may be possible to pre-process these water features, and thicken their line width. By enforcing a minimum line-size, we can ensure faces are created and tagged. However, this approach does not perfectly model the real-world, and so further options may be optimal.
 
-\subsubsection{Path Identification}
+\subsubsection{Path Identification}\label{section:improvements:paths}
 
 A relatively simple but effective addition to the \texttt{PathFeature} would be to return the category of path/road. Currently, roads/paths are equally weighted. However, many users would prefer to traverse over paths, and sometimes explicitly would like to avoid main roads. The overpass API by default returns GeoJSON containing the geometry of the paths/roads, along with a large amount of additional data such as type, surface, and access restrictions --- each of these could be extracted during data processing and stored in a data structure along with the geometry.
 
@@ -1167,11 +1380,13 @@ This project adds a great deal to the understanding of off-road route planning u
   The following is a list of required c++ libraries that need to be installed, including versions used in development:
 
   \begin{itemize}
-    \item GDAL (v3.4.3)
-    \item CGAL (v5.6.2)
-    \item oneTBB (v2.13)
-    \item OpenCV (4.10.0)
-    \item GeographicLib (v26.1.0)
+    \item \texttt{GDAL} (v3.4.3) --- GIS data processing
+    \item \texttt{CGAL} (v5.6.2) --- Delaunay triangulation and mesh processing
+    \item \texttt{oneTBB} (v2.13) --- Parallelization
+    \item \texttt{OpenCV} (4.10.0) --- Computer Vision
+    \item \texttt{GeographicLib} (v26.1.0) --- Point projection conversion
+    \item \texttt{simdjson} (v3.6.0) --- JSON parsing (automatically fetched by CMAKE)
+    \item \texttt{Eigen} (v3.3) --- parallelization for CGAL
   \end{itemize}
 
   \section{Compilation Instructions}
@@ -1179,14 +1394,14 @@ This project adds a great deal to the understanding of off-road route planning u
   To build the library and router, first setup the build directory:
 
   \begin{lstlisting}[language=bash]
-  $ cd tsr-cli
-  $ mkdir build && cd build
+	$ cd tsr-cli
+	$ mkdir build && cd build
 \end{lstlisting}
 
   \noindent Then configure with \texttt{cmake}, making sure to set configuration option values as appropriate:
 
   \begin{lstlisting}[language=bash]
-  $ cmake .. -G Ninja -DCMAKE_BUILD_TYPE= -DTSR_TEST=
+	$ cmake .. -G Ninja -DCMAKE_BUILD_TYPE= -DTSR_TEST=
 \end{lstlisting}
 
   \vspace*{-2em}
@@ -1205,17 +1420,17 @@ This project adds a great deal to the understanding of off-road route planning u
   \noindent The library, CLI app, and tests can then be compiled using one of the following:
 
   \begin{lstlisting}[language=bash]
-  # Compile everything
-  $ ninja
+	# Compile everything
+	$ ninja
 
-  # Compile just the library
-  $ ninja tsr
+	# Compile just the library
+	$ ninja tsr
 
-  # Compile the tests
-  $ ninja test-tsr
+	# Compile the tests
+	$ ninja test-tsr
 
-  # Compile the cli application
-  $ ninja tsr-cli
+	# Compile the cli application
+	$ ninja tsr-cli
 \end{lstlisting}
 
   \pagebreak
@@ -1224,17 +1439,17 @@ This project adds a great deal to the understanding of off-road route planning u
   For the CLI application, refer to the user manual below:
 
   \begin{lstlisting}[]
-  Usage: 
-      tsr-cli [options] <start_lat> <start_lng> <end_lat> <end_lng>
-        Route between the given start and end points
-      tsr-cli [options] --example  
-        Route between a set of example start and end points
-      tsr-cli [options] --help
-        Print this help message
+	Usage: 
+			tsr-cli [options] <start_lat> <start_lng> <end_lat> <end_lng>
+				Route between the given start and end points
+			tsr-cli [options] --example  
+				Route between a set of example start and end points
+			tsr-cli [options] --help
+				Print this help message
 
-    Options:
-      --radii-multiplier  Radii multiplier to apply to domain size
-\end{lstlisting}
+		Options:
+			--radii-multiplier  Radii multiplier to apply to domain size
+	\end{lstlisting}
 
   \pagebreak
   \includepdf[pages=1, scale=0.8, pagecommand=\section{Ethics Self-Assessment Form}\label{appendix:ethics}]{ethics.pdf}
