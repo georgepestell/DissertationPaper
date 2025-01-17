@@ -759,6 +759,7 @@ Data features are those features which require the use of API or local data sour
 														const ChunkInfo &chunk);
 	};
 	\end{lstlisting}
+  \vspace{-2em}
   \caption{\texttt{ChunkManager} class, which enables easy setup and interface for Data Features to  interact the API/cache.}
   \label{lst:chunkmanager}
 \end{figure}
@@ -774,13 +775,15 @@ The \texttt{ChunkManager} is setup by the \texttt{DataFeature} object with a URL
   \begin{lstlisting}
 	https://lz4.overpass-api.de/api/interpreter?data=
 	[out:xml][timeout:25];
-	(nwr["natural"="bay"]({},{},{},{});
-	nwr["natural"="water"]({},{},{},{});
-	nwr["natural"="coastline"]({},{},{},{});
+	(
+    nwr["natural"="bay"]({},{},{},{});
+	  nwr["natural"="water"]({},{},{},{});
+	  nwr["natural"="coastline"]({},{},{},{});
 	);
 	(._;>;);
 	out body;{}
 	\end{lstlisting}
+  \vspace{-2em}
   \caption{Decoded and formatted URL used to fetch the water data from the OpenStreetMap Overpass API.}
   \label{url:water}
 \end{figure}
@@ -807,6 +810,7 @@ OpenCV edge detection is used on the rasterized dataset to re-fetch data edges. 
 	out+body
 	{}
 	\end{lstlisting}
+  \vspace{-2em}
   \caption{Decoded and formatted URL used to fetch the paths and roads from the Overpass API.}
   \label{url:paths}
 \end{figure}
@@ -831,6 +835,7 @@ These paths are then stored as points in a \texttt{map} of road segments as coor
 	&FORMAT=image/tiff
 	&WIDTH=2048&HEIGHT=2048{}";
 	\end{lstlisting}
+  \vspace{-2em}
   \caption{Decoded and formatted URL used to fetch the terrain type data from the CEH API.}
   \label{api:terrain}
 \end{figure}
@@ -863,6 +868,7 @@ The simplest method to fetching each contour between colours in each band would 
 		{0xFFFFFF, NO_DATA},
 	};
 	\end{lstlisting}
+  \vspace{-2em}
   \caption{Map used to associate the pixel colour value from the terrain data with the terrain type.}
   \label{terrain:map}
 \end{figure}
@@ -929,6 +935,7 @@ Boolean to boolean inverting is simple, and implemented using \texttt{!} boolean
 		return 1 / value;
 	}
 	\end{lstlisting}
+  \vspace{-2em}
   \caption{The implementation of the \texttt{InverseFeature} with \texttt{<bool,bool>} as input and output template parameters.}
   \label{lst:invert:doubledouble}
 \end{figure}
@@ -973,6 +980,7 @@ Conditional features enable change in control flow, and are used by the default 
 		}
 	};
 	\end{lstlisting}
+  \vspace{-2em}
   \caption{\texttt{ConditionalFeature} implementation, showing the dependency order is named through the \texttt{DEPENDENCIES} enum, and values only calculated when required.}
   \label{fig:conditional}
 \end{figure}
@@ -1011,6 +1019,7 @@ The decision to use GDAL instead of developing custom warping tools was driven b
 		// ...
 	}
 	\end{lstlisting}
+  \vspace{-2em}
   \caption{The main uniform cost search algorithm implementation.}
   \label{fig:impl:search:mainloop}
 \end{figure}
@@ -1059,7 +1068,8 @@ When routing an infinite cost (defined using \texttt{std::numeric\_limits}) repr
 			}
 		} while (++faceCirculator != faceCirculatorEnd);
 	}
-\end{lstlisting}
+  \end{lstlisting}
+  \vspace{-2em}
   \caption{The process of searching neighbouring search node edges using the TIN mesh representation.}
   \label{fig:impl:search:edges}
 \end{figure}
@@ -1403,7 +1413,6 @@ This project adds a great deal to the understanding of off-road route planning u
   \begin{lstlisting}[language=bash]
 	$ cmake .. -G Ninja -DCMAKE_BUILD_TYPE= -DTSR_TEST=
 \end{lstlisting}
-
   \vspace*{-2em}
 
   \begin{itemize}
